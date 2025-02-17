@@ -140,37 +140,64 @@ export const Products = ({ addToCart }) => {
 
     return (
         <div className='mt-[70px]'>
-         {
-  isNew ? <>  
-    <div className="border-b-2 rounded-b-lg border-green-200 overflow-hidden">
-     
+<div className="flex flex-wrap gap-4">
+  {isNew && (
+    <div className="border-b-2 rounded-b-lg  overflow-hidden flex-1">
       <div className="flex">
-        {data.filter(item => item.isNew).length > 0 ? (
-            
-          <div className=" marquee-container flex">
-          
-            {data.filter(item => item.isNew).map(item => (
+        {data.filter((item) => item.isNew).length > 0 ? (
+          <div className="marquee-container flex">
+            {data.filter((item) => item.isNew).map((item) => (
               <div key={item.id} className="px-4 text-right">
-                 
-                <Link to={`/detail/${item.id}`} className='no-underline'>
-                
-                  <img 
-                    src={"http://127.0.0.1:8000/" + item.image} 
-                    alt="product" 
-                    className='w-[90px] h-[90px] -mt-2 mb-1' 
+                <Link to={`/detail/${item.id}`} className="no-underline">
+             
+                  {item?.reason !== null && (
+                    <>
+                       <span className='px-2 absolute py-1 top-1 -ml-[30px] rounded-lg bg-green-500 text-white'>New</span>
+                                        <span className="absolute   left-1  bg-rose-500 text-white text-xs font-bold px-4 py-2 rounded-lg">
+                      {item?.reason}
+                   
+                    </span>
+                    
+                    </>
+
+                  )}
+                  <img
+                    src={"http://127.0.0.1:8000/" + item.image}
+                    alt="product"
+                    className="w-[130px] h-[120px] -mt-2 mb-1"
                   />
                 </Link>
               </div>
             ))}
           </div>
         ) : (
-          <p> </p>
+          <p></p>
         )}
       </div>
     </div>
-  </> : <> </>
-}
+  )}
 
+  <div className="flex border-b-2 rounded-b-lg  overflow-hidden marquee-container flex-1">
+    {currentItems.map((item) => {
+      if (item?.amount !== null) {
+        return (
+          <div key={item.id} className="px-4 text-right">
+          
+            <Link to={`/detail/${item.id}`} className="no-underline">
+                <span className='absolute -ml-[140px] bg-rose-600 text-white px-3 py-1 rounded-lg'>{item?.reason}-{item?.amount}%</span>
+               
+              <img
+                src={"http://127.0.0.1:8000/" + item.image}
+                alt="product"
+                className="w-[130px] h-[120px] -mt-2 mb-1"
+              />
+            </Link>
+          </div>
+        );
+      }
+    })}
+  </div>
+</div>
 
             
             <p className='text-center font-mono text-green-600 font-bold text-lg py-4'>Our Products</p>
@@ -197,13 +224,22 @@ export const Products = ({ addToCart }) => {
                 {currentItems.length > 0 ? (
                     currentItems.map((item) => (
                         <div key={item.id} className="card w-[300px] px-2 py-2 my-2">
-                           {item.isNew && (
+                            <div className="flex justify-between">
+                            {item.isNew && (
                                 <span className="absolute top-2 left-2 bg-green-500 text-white text-xs font-bold px-2 py-1 rounded-lg">
                                     New
                                 </span>
                             )}
                        
-
+                        {
+                            (item?.reason!==null)&& (
+                                <span className="absolute top-2 right-0 bg-rose-500 text-white text-sm font-bold px-4 py-2 rounded-lg">
+                                {item?.reason} OFFER- {item?.amount}%
+                            </span>
+                            )
+                        }
+                            </div>
+                         
                         
                             <img src={"http://127.0.0.1:8000/" + item.image} alt="product" className='w-[200px] h-[160px]' />
                             {item.rating != '0' ? (
@@ -215,7 +251,21 @@ export const Products = ({ addToCart }) => {
 )}
 
                             <p className='font-semibold'>{item.name}</p>
-                            <p className='font-semibold'>{item.price} TK</p>
+                            <div className="h-[70px]">
+                            {
+                            (item?.reason!==null)?(
+                                <span className="font-semibold text-rose-700 mb-1">
+                                     <p className='font-semibold line-through'>{item.price} TK</p>
+                               Discount Price :  
+                                {
+                                    ((100-item?.amount)*item?.price)/100
+                                } TK
+                            </span>
+                            ):<>   <p className='font-semibold'>{item.price} TK</p></>
+                        }
+
+                        </div>
+
                            {
                                 users ? (
                                     <p onClick={() => addToCart(item)} className='px-5 py-2 rounded-md bg-blue-500 text-white'>

@@ -10,7 +10,7 @@ export const Inventory = () => {
   const [totalItems, setTotalItems] = useState(0);
   const [totalSold, setTotalSold] = useState(0);
   const [totalRevenue, setTotalRevenue] = useState(0);
-
+  
   const { id } = useParams();
 
   useEffect(() => {
@@ -154,14 +154,21 @@ export const Inventory = () => {
                   </div>
 
                   <div className="flex justify-items-center">
-                    <p onClick={() => remove(item.id)} className='mx-1 w-[130px] px-4 py-2 rounded-lg text-white bg-red-500'>
+                    <p onClick={() => remove(item.id)} className='mx-1 w-[100px] px-2 text-sm py-2 rounded-lg text-white bg-red-500'>
                       Remove
                     </p>
                     <Link to={`/updateProduct/${item.id}`} className='no-underline'>
-                      <p className='w-[130px] px-4 py-2 rounded-lg text-white bg-cyan-500'>
+                      <p className='w-[100px] px-2 text-sm py-2 rounded-lg text-white bg-cyan-500'>
                         Update
                       </p>
                     </Link>
+                    <Link className='no-underline'
+                   
+                        to={`/discount/${item?.id}`}
+                      >
+                        <p className='w-[100px] px-2 text-sm ml-1 py-2 rounded-lg text-white bg-rose-500'>Discount</p>
+                        
+                      </Link>
                   </div>
                   <Link to={`/detail/${item.id}`} className='no-underline'>
                     <p className='no-underline rounded-md py-1 bg-black text-white'>

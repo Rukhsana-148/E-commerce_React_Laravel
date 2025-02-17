@@ -90,6 +90,13 @@ export const MyProducts = () => {
                            
                                 <div>
                                     <div className="h-[250px]">
+                                    {
+                            (item?.products?.reason!==null)&& (
+                                <span className="flex px-3 py-1 w-[150px] absolute font-mono rounded-lg bg-rose-500 text-white">
+                                {item?.products?.reason} OFFER- {item?.products?.amount}%
+                            </span>
+                            )
+                        }
                                     <img
                                         width="200px"
                                        
@@ -101,8 +108,21 @@ export const MyProducts = () => {
                                    
                                   
                                     <p  className='text-left mt-2'>{item?.products?.name}</p>
-                                    <p className='text-left mt-2'>Product Price: {item?.products?.price}Tk</p>
-                                    <p className='text-left mt-2'>Total Price: {item?.price}Tk</p>
+
+
+                                    {
+                            (item?.products?.reason!==null)?(
+                                <span className="font-semibold  mb-1 text-left ">
+                                     <p className='font-semibold  text-left '>Product Price: : <span className='line-through'>{item?.products?.price} TK</span></p>
+                               <p className='text-left text-rose-500'>Discount Price :  
+                                {
+                                    ((100-item?.products?.amount)*item?.products?.price)/100
+                                } TK
+                                </p>
+                            </span>
+                            ):<>   <p className='font-semibold text-left'>Product Price: {item?.products?.price} TK</p></>
+                        }
+                                     <p className='text-left mt-2'>Total Price: {item?.price}Tk</p>
                                    <p className='font-bold text-center'>Please Give Review</p>
                                     {/* Optionally, you can show the user's details */}
                                     <div className="text-left border-1 border-solid-black px-3 py-2 rounded-lg font-mono">     <form onSubmit={(e)=>handleReview(e, item?.products?.id, item?.id)} >

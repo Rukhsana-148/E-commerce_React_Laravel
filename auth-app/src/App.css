@@ -13,7 +13,7 @@
 .marquee-container {
   display: flex;
   white-space: nowrap;
-  animation: scroll-left 40s linear infinite;
+  animation: scroll-left 10s linear infinite;
 }
 
 @keyframes scroll-left {
@@ -27,7 +27,7 @@
 
 @media (prefers-reduced-motion: no-preference) {
   .App-logo {
-    animation: App-logo-spin infinite 25s linear;
+    animation: App-logo-spin infinite 10s linear;
   }
 }
 ::-webkit-scrollbar {

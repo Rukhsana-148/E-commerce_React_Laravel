@@ -245,4 +245,15 @@ public function approveUser($id) {
   }
 }
 
+public function discountProduct(Request $request){
+  $id = $request->input('id');
+  $product = Product::find($id);
+
+  $product->reason = $request->input('reason');
+  $product->amount = $request->input('amount');
+  $product->save();
+  return $product;
+
+}
+
 }

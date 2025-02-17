@@ -109,6 +109,8 @@ return (
 
 <select     className="border-2 text-left border-green-300 rounded-lg px-5 py-3"
           name='type' onChange={(e)=>setType(e.target.value)}>
+                  <option  className='ml-2 px-4 py-1 rounded-lg'>Select Shoe Type</option>
+                           
                                 <option value="Baby Shoe" className='ml-2 px-4 py-1 rounded-lg'>Baby Shoe</option>
                                 <option value="Hill" className='ml-2 px-4 py-1 rounded-lg'>Hill</option>
                                 <option value="Shoe" className='ml-2 px-4 py-1 rounded-lg'>Shoe</option>

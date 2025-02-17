@@ -34,7 +34,7 @@ export const AddProduct = () => {
       method: 'POST',
       body: formData,
     });
-
+console.log(formData)
     result = await result.json();
     
      Swal.fire({
@@ -95,6 +95,8 @@ export const AddProduct = () => {
           /><br />
  <select     className="border-2 border-green-300  rounded-lg px-3 py-3"
           name='type' onChange={(e)=>setType(e.target.value)}>
+              <option  className='ml-2 px-4 py-1 rounded-lg'>Select Shoe Type</option>
+                           
                                 <option value="Baby Shoe" className='ml-2 px-4 py-1 rounded-lg'>Baby Shoe</option>
                                 <option value="Hill" className='ml-2 px-4 py-1 rounded-lg'>Hill</option>
                                 <option value="Shoe" className='ml-2 px-4 py-1 rounded-lg'>Shoe</option>

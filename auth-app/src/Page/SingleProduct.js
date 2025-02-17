@@ -54,13 +54,19 @@ useEffect(() => {
     }
   }, [item?.rating]); // Dependency array ensures this runs when item.rating changes
   return (
-    <div className="flex justify-center items-center">
+    <div className="md:flex justify-center items-center">
  <div key={item?.id} className='px-2    mt-[100px]  py-1 rounded-md border-2 border-green-500'>
                         {/* Check if 'products' exist and render product info */}
                        
-                            <div className='flex'>
+                            <div className='md:flex'>
                               <div className='px-5 justify-items-center'>
-                          
+                              {
+                            (item?.reason!==null)&& (
+                                <span className="flex px-3 py-1 rounded-lg bg-rose-500 text-white">
+                                {item?.reason} OFFER- {item?.amount}%
+                            </span>
+                            )
+                        }
                                 <img
                                     width="200px"
                                     className="pt-3"
@@ -75,9 +81,19 @@ useEffect(() => {
       )}
               
                                 <p className='font-bold text-xl py-1'>{item?.name}</p>
-                                <p>{item?.description}</p>
-                                <p>Product Price: <span className='font-bold pl-1 '>{item?.price}Tk.</span></p>
-                          {users?<> <p onClick={()=>addToCart(item)} className='lg:px-5 text-sm py-2 px-2 rounded-md bg-green-900 text-white'>Add To Cart</p>
+                                <p className='w-[300px]'>{item?.description}</p>
+                                {
+                            (item?.reason!==null)?(
+                                <span className="font-semibold  mb-1">
+                                     <p className='font-semibold '>Price : <span className='line-through'>{item?.price}</span> TK</p>
+                              <p>Discount Price :  <span className='text-rose-500'> {
+                                    ((100-item?.amount)*item?.price)/100
+                                }</span>
+                                TK</p>
+                            </span>
+                            ):<>   <p className='font-semibold'>{item.price} TK</p></>
+                        }
+      {users?<> <p onClick={()=>addToCart(item)} className='lg:px-5 text-sm py-2 px-2 rounded-md bg-green-900 text-white'>Add To Cart</p>
                           </>:<></>}
                                
                                 {/* Optionally, you can show the user's details */}

@@ -36,6 +36,7 @@ Route::post('/sendRequest', [ProductController::class, 'sendRequest']);
 Route::get('/allRequest', [ProductController::class, 'allRequest']);
 Route::get('/deleteUser/{id}', [ProductController::class, 'deleteUser']);
 Route::get('/approveUser/{id}', [ProductController::class, 'approveUser']);
+Route::post('/discountProduct', [ProductController::class, 'discountProduct']);
 
 Route::middleware([CorsMiddleware::class])->group(function () {
     Route::post('/auth/forgetPassword', [RegisterController::class, 'forgetPassword']);

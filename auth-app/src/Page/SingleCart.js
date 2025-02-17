@@ -51,7 +51,13 @@ useEffect(()=>{
         setCartID(cartData?.id);
         setProductId(cartData?.products?.id);
         console.log("Wrong", cartData?.products?.quantity)
-        setPrice(cartData?.products?.price||0);
+        if(cartData?.products?.reason){
+          const disPrice = ((100-cartData?.products?.amount)*cartData?.products?.price)/100;
+          setPrice(disPrice)
+        }else{
+          setPrice(cartData?.products?.price||0);
+        }
+       
       
       } catch (error) {
         console.error('Error fetching cart:', error);
@@ -151,15 +157,29 @@ setItems(prevProducts => {
   };
 
   return (
-    <div className="flex justify-center items-center px-4 rounded-lg py-4 w-[500px] mt-[90px] border-2 border-green-800 mx-auto">
-    <div className="flex justify-center items-center mx-4 my-3">
-      <img src={`http://127.0.0.1:8000/${cart?.products?.image}`} alt="Product" className='w-[75] h-[75]'/>
+    <div className="md:flex   justify-center items-center px-4 rounded-lg py-4 w-[500px] mt-[90px] md:border-2 md:border-green-800 mx-auto">
+    <div className=" justify-center items-center mx-4 my-3">
+
+    {
+                            (cart?.products?.reason!==null)&& (
+                                <span className="flex px-3 py-1 rounded-lg bg-rose-500 text-white">
+                                {cart?.products?.reason} OFFER- {cart?.products?.amount}%
+                            </span>
+                            )
+                        }
+      <img src={`http://127.0.0.1:8000/${cart?.products?.image}`} alt="Product" className='w-[75] h-[75] md:pr-[30px]'/>
     </div>
-    <div className="border-l-2 border-green-500 px-1">
+    <div className="md:border-l-2 md:border-green-500 px-3">
+
       <p>{cart?.products?.name}</p>
-      <p>{cart?.products?.price} /=</p>
+        {
+          cart?.products?.amount && (
+            <>  <p className='line-through'>{cart?.products?.price} /=</p></>
+          )
+        }
+      
       <p>Total: {quantity * price} /=</p>
-  
+      
       {cart?.products?.quantity > 0 ? (
         <>
           <div className="flex gap-2 justify-center">

@@ -19,6 +19,7 @@ import { SingleProduct } from './Page/SingleProduct';
 import { UpdateProduct } from './Page/UpdateProduct';
 import { Inventory } from './Page/Inventory';
 import { Seller } from './Page/Seller';
+import { Discount } from './Page/Discount';
 export const AuthContext = createContext();
 
 function App() {
@@ -236,6 +237,7 @@ console.log(data)
                       >
                         Inventory
                       </NavLink>
+                    
                     </li>
                       </>
                     )}
@@ -372,6 +374,7 @@ console.log(data)
             <Route path="/detail/:id" element={<SingleProduct addToCart={countHandle} />} />
             <Route path="/updateProduct/:id" element={<UpdateProduct />} />
             <Route path="/inventory/:id" element={<Inventory />} />
+            <Route path="/discount/:id" element={<Discount />} />
             <Route path="/sellers" element={<Seller />} />
           </Routes>
         </Router>
