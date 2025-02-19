@@ -1,7 +1,8 @@
 import './App.css';
 import { useState, useEffect, createContext } from 'react';
 import { Navbar, Nav, NavDropdown } from 'react-bootstrap';
-import { BrowserRouter as Router, Routes, Route, Link, NavLink } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Link, NavLink, useLocation } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { Register } from './Page/Register';
 import { Login } from './Page/Login';
 import { Home } from './Page/Home';
@@ -20,6 +21,9 @@ import { UpdateProduct } from './Page/UpdateProduct';
 import { Inventory } from './Page/Inventory';
 import { Seller } from './Page/Seller';
 import { Discount } from './Page/Discount';
+import { NotFound } from './Page/NotFound';
+import PredefinedRoutes from './Page/PredefinedRoutes';
+
 export const AuthContext = createContext();
 
 function App() {
@@ -32,8 +36,16 @@ function App() {
   const [loggedIn, setLoggedIn] = useState(false);
   const [user_id, setUserId] = useState(null);
   const [menu, setMenu] = useState(false);
-  const users = JSON.parse(localStorage.getItem("user"));
+  const navigate = useNavigate();
 
+  const users = JSON.parse(localStorage.getItem("user"));
+  
+  const location = useLocation();
+
+  // Exclude Navbar on the NotFound page
+  const excludeNavbar = !PredefinedRoutes.some(route => location.pathname.match(new RegExp(route.replace(/:\w+/g, '\\w+'))));
+
+  console.log("Navbar",excludeNavbar)
   useEffect(() => {
     // Retrieve user data from localStorage
     const storedUser = JSON.parse(localStorage.getItem("user"));
@@ -78,7 +90,10 @@ localStorage.setItem("user",JSON.stringify(user))
 setLoggedIn(false)
 setProfile(null)
 setUserId(null)
+
+
 localStorage.removeItem(user)
+
     }
   };
 
@@ -184,18 +199,27 @@ console.log(data)
 
   const logOut = () => {
     setLoggedIn(false);
-    alert("Logout");
+   
     localStorage.removeItem("user");
     setProfile(null);
     const logoutTimeMe = new Date().toISOString(); // Get the current logout time in ISO format
     localStorage.setItem(`lastLoggedOut_${user_id}`, logoutTimeMe);
     setCount(0);
+    navigate('/login')
+    Swal.fire({
+      title: "Log Out",
+      icon: "success",
+      text: "You are logged out.",
+    });
   };
 
   return (
     <div className="App">
+     {
+
+     excludeNavbar ?
       <AuthContext.Provider value={{ loginHandle, setNotification }}>
-        <Router>
+      
           <div className="body border-b-2 border-green-700 rounded-b-xl bg-white   shadow-b-lg flex justify-between items-cnter h-[75px]  text-white py-2 pl-4 fixed w-full top-0 left-0 z-50">
             <div className="flex  pt-[2px] ">
             
@@ -376,9 +400,10 @@ console.log(data)
             <Route path="/inventory/:id" element={<Inventory />} />
             <Route path="/discount/:id" element={<Discount />} />
             <Route path="/sellers" element={<Seller />} />
-          </Routes>
-        </Router>
-      </AuthContext.Provider>
+            <Route path="*" element={<NotFound/>}/>
+                      </Routes>
+        
+      </AuthContext.Provider>:<></>}
     </div>
   );
 }

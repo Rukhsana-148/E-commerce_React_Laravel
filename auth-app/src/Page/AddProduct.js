@@ -79,6 +79,7 @@ console.log(formData)
           <input
             type="number"
             name="price"
+            min="0"
             value={price}
             onChange={(e) => setPrice(e.target.value)}
             placeholder="Enter product price"
@@ -88,6 +89,7 @@ console.log(formData)
           <input
             type="number"
             name="qunt"
+            min="1"
             value={qunt}
             onChange={(e) => setQunt(e.target.value)}
             placeholder="Enter product quantity"

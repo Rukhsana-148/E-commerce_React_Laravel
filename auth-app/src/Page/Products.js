@@ -140,7 +140,7 @@ export const Products = ({ addToCart }) => {
 
     return (
         <div className='mt-[70px]'>
-<div className="flex flex-wrap gap-4">
+<div className="md:flex md:flex-wrap md:gap-4">
   {isNew && (
     <div className="border-b-2 rounded-b-lg  overflow-hidden flex-1">
       <div className="flex">
@@ -154,7 +154,7 @@ export const Products = ({ addToCart }) => {
                     <>
                        <span className='px-2 absolute py-1 top-1 -ml-[30px] rounded-lg bg-green-500 text-white'>New</span>
                                         <span className="absolute   left-1  bg-rose-500 text-white text-xs font-bold px-4 py-2 rounded-lg">
-                      {item?.reason}
+                      {item?.reason}-{item?.amount}%
                    
                     </span>
                     
@@ -177,19 +177,23 @@ export const Products = ({ addToCart }) => {
     </div>
   )}
 
-  <div className="flex border-b-2 rounded-b-lg  overflow-hidden marquee-container flex-1">
-    {currentItems.map((item) => {
+  <div className="flex border-b-2 rounded-b-lg  overflow-hidden flex-1">
+  <div className="flex space-6  marquee-container">
+  {currentItems.map((item) => {
       if (item?.amount !== null) {
         return (
           <div key={item.id} className="px-4 text-right">
           
             <Link to={`/detail/${item.id}`} className="no-underline">
-                <span className='absolute -ml-[140px] bg-rose-600 text-white px-3 py-1 rounded-lg'>{item?.reason}-{item?.amount}%</span>
+                <span className='absolute md:flex block -ml-[10px] bg-rose-600 text-white text-xs md:px-3  py-1 rounded-lg'>
+                <span>{item?.reason}-</span>  
+                <span>{item?.amount}%</span>  
+                  </span>
                
               <img
                 src={"http://127.0.0.1:8000/" + item.image}
                 alt="product"
-                className="w-[130px] h-[120px] -mt-2 mb-1"
+                className="md:w-[130px]  object-cover md:h-[120px] -mt-2 mb-1"
               />
             </Link>
           </div>
@@ -197,6 +201,9 @@ export const Products = ({ addToCart }) => {
       }
     })}
   </div>
+   
+  </div>
+
 </div>
 
             

@@ -56,7 +56,7 @@ class RegisterController extends Controller
     public function login(Request $request)
     {
         $validate = $request->validate([
-            'email' => 'required|email',
+            'email' => 'required|email|exists:users,email',
             'password' => 'required|min:6',
         ]);
 

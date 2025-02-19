@@ -2,6 +2,7 @@ import React, {useState, useContext} from 'react'
 import { useNavigate } from 'react-router-dom';
 import { AuthContext } from '../App';
 import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
+import Swal from 'sweetalert2';
 export const Login = () => {
     const [email, setEmail] = useState();
  
@@ -22,8 +23,9 @@ export const Login = () => {
         });
       
         let result = await response.json();
-      
-        if (result) {
+        console.log(response)
+        if (response.ok) {
+     
           // Save the user and token in localStorage
           localStorage.setItem("user", JSON.stringify(result));
           console.log("Local Storage users:", JSON.parse(localStorage.getItem("user")));
@@ -31,7 +33,11 @@ export const Login = () => {
           navigate('/'); // Redirect to homepage after login
         } else {
        
-          alert("Login failed");
+          Swal.fire({
+            title: "Error!",
+            icon: "error",
+            text: "Please enter correct information.",
+          });
         }
       }
   return (

@@ -100,15 +100,14 @@ export const EditProfile = ({profile, setProfile, setNotify}) => {
              },
              body: JSON.stringify(data), // Send the data as JSON
            });
-    console.log(id)
+    console.log(data)
            const textResponse = await result.json(); // Read the response as text
-     
            console.log(textResponse); 
             Swal.fire({
-                          title: "Request is Sent!",
+                         
                           icon: "success",
                           draggable: true,
-                          text: "Request is sent for approval as Seller!",
+                          title: textResponse.message,
                         });
     }
   return (

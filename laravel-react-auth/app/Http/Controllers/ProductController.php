@@ -5,11 +5,13 @@ use App\Models\Product;
 use App\Models\User;
 use App\Models\Cart;
 use App\Models\Sell;
+use Carbon\Carbon;
+
 use App\Models\AdminRequest;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule; // Add this line
 use Illuminate\Support\Facades\Validator;
-
+use Illuminate\Support\Facades\RateLimiter;
 
 class ProductController extends Controller
 {
@@ -127,42 +129,61 @@ public function productUpdate(Request $req){
        return $product;
   }
 
-  public function review(Request $req){
-    $id = $req->input('id');
-    $product = Product::find($id);
-
-    // Check if product exists
-    if (!$product) {
-        return response()->json(['message' => 'Product not found'], 404);
-    }
-
-    // Handle ratings array
-    $ratings = $product->rating ? json_decode($product->rating, true) : [];
-    $ratings[] = $req->rating;  // Assuming rating is passed as part of the request
-    $product->rating = json_encode($ratings);  // Store updated ratings
-
-
-    if ($req->hasFile('image')) {
-       $imagePath = $req->file('image')->store('imageStorage', 'public');
-    } else {
-      // Handle missing image (optional)
-      $imagePath = null;
+  public function review(Request $request)
+  {
+      $id = $request->input('id');
+      $product = Product::find($id);
+  
+      // Check if product exists
+      if (!$product) {
+          return response()->json(['message' => 'Product not found'], 404);
+      }
+  
+      // Validate the incoming request
+      $validate = $request->validate([
+          'rating' => 'numeric|min:0',  // Rating must be provided and >= 1
+          'image' => 'nullable|image|mimes:jpg,gif,png|max:2048',  // Image is optional but if provided, it must be a valid image
+      ]);
+  
+      // Validate comment if provided
+      if ($request->input('comment')) {
+          $request->validate([
+              'comment' => 'nullable|string|max:255',  // Comment is optional, but if provided, it must be a string with max length 255
+          ]);
+      }
+  
+      // Handle ratings array
+      $ratings = $product->rating ? json_decode($product->rating, true) : [];
+      if ($request->input('rating')) {
+          $ratings[] = $validate['rating'];  // Add the rating to the ratings array
+          $product->rating = json_encode($ratings);  // Store updated ratings
+      }
+  
+      // Handle image upload (if any)
+      if ($request->hasFile('image')) {
+          $imagePath = $request->file('image')->store('imageStorage', 'public');
+      } else {
+          $imagePath = null;  // If no image is provided, set it to null
+      }
+  
+      // Handle comments array if a comment is provided
+      if ($request->input('comment')) {
+          $comments = $product->comment ? json_decode($product->comment, true) : [];
+          $new_comment = [
+              'user_name' => $request->input('name'),
+              'comment' => $request->input('comment'),
+              'image' => $imagePath,  // Store the image path (or null if no image is provided)
+          ];
+          $comments[] = $new_comment;  // Append the new comment to the comments array
+          $product->comment = json_encode($comments);  // Store updated comments
+      }
+  
+      // Save the product with updated ratings and comments
+      $product->save();
+  
+      return response()->json(['message' => 'Review added successfully'], 200);
   }
-    // Handle comments array
-    $comments = $product->comment ? json_decode($product->comment, true) : [];
-    $new_comment = [
-        'user_name' => $req->input('name'),
-        'comment' => $req->input('comment'),
-        'image'=>$imagePath // Assuming comment is passed in the request
-    ];
-    $comments[] = $new_comment;  // Append the new comment
-    $product->comment = json_encode($comments);  // Store updated comments
-
-    // Save the product with updated ratings and comments
-    $product->save();
-
-    return response()->json(['message' => 'Review added successfully'], 200);
-}
+  
 public function deleteCart($id){
   $product = Cart::where('id', $id)->delete();
   if($product){
@@ -205,15 +226,43 @@ if ($validator->fails()) {
       'errors' => $validator->errors()
   ], 422); // 422 Unprocessable Entity
 }
+ 
+ 
 
-// Create a new request record
-$requestInfo = new AdminRequest;
-$requestInfo->user_id = $request->id; // Assign the id to the user_id column
-$requestInfo->category = $request->cat;
-$requestInfo->save();
+  $recentRequest = AdminRequest::orderBy('created_at', 'desc')->first();
+  if($recentRequest){
+   $lastRequest = Carbon::parse($recentRequest->created_at);
+   $current = Carbon::parse(now());
+     if($current>$lastRequest){
+      $isBig = true;
+     }
+     $timeDiff = $lastRequest->diffInMinutes($current); // No need for 'false' here
 
-// Return the saved request record as a response
-return response()->json($requestInfo, 201); 
+   $time = 5-$timeDiff;
+   if($timeDiff<5){
+     return response()->json(['message'=>"You can send request after ${time}"]);
+   }else{
+ // Create a new request record
+ $requestInfo = new AdminRequest;
+ $requestInfo->user_id = $request->id; // Assign the id to the user_id column
+ $requestInfo->category = $request->cat;
+ $requestInfo->save();
+ 
+ // Return the saved request record as a response,
+ return response()->json(['message'=>"Request is sent successfully"]); 
+   }
+ }else{
+  $requestInfo = new AdminRequest;
+ $requestInfo->user_id = $request->id; // Assign the id to the user_id column
+ $requestInfo->category = $request->cat;
+ $requestInfo->save();
+ 
+ // Return the saved request record as a response,
+ return response()->json(['message'=>'Send request'], 201); 
+ }
+
+
+
 }
 
 public function allRequest(){
@@ -254,6 +303,15 @@ public function discountProduct(Request $request){
   $product->save();
   return $product;
 
+}
+
+
+public function resetDiscount($id){
+ $product = Product::find($id);
+ $product->amount = null;
+ $product->reason = null;
+ $product->save();
+ return 'Discount is Reset';
 }
 
 }

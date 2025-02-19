@@ -35,15 +35,32 @@ export const MyProducts = () => {
 
     const handleReview = async (e, productId, id) => {
         e.preventDefault();
-        const reviewData = new FormData();
-        reviewData.append("id", productId);
-        reviewData.append("rating", rating[id]||"0");
-        reviewData.append("name", name);
-        reviewData.append("comment", comment);
+        if(rating[id] < 1 && (comment === "" || !image)){
+           
+                Swal.fire({
+                    title: "No Ratng!",
+                    icon: "error",
+                    text: "You Should provide comment or image.",
+                  });
+            
+          
+        }else{
+            const reviewData = new FormData();
+            reviewData.append("id", productId);
+            
+            reviewData.append("rating", rating[id]||"0");
+            if(comment!==""){
+                reviewData.append("name", name);
+                reviewData.append("comment", comment);
+            }
+        //    reviewData.append("name", name);
+            
+            
+            if (image) {
+                reviewData.append("image", image);
+            }
         
-        if (image) {
-            reviewData.append("image", image);
-        }
+     
         for (let pair of reviewData.entries()) {
             console.log(pair[0], pair[1]);
         }
@@ -56,7 +73,7 @@ export const MyProducts = () => {
 
         const data = await response.json();
         console.log("Response:", data);
-
+         console.log(data)
         if (response.ok) {
              Swal.fire({
                                       title: "Review is Done",
@@ -64,16 +81,36 @@ export const MyProducts = () => {
                                       text: data.message || "Thanks for your review",
                                     });
         } else {
-             Swal.fire({
-                                      title: "Something is wrong",
-                                      icon: "Error",
-                                      text: data.message || "Something is wrong.",
-                                    });
-        }
-    } catch (error) {
+            let errorData = await response.json();
+            if(errorData.errors){
+                Object.entries(errorData.errors).forEach(([field, message])=>{
+                    Swal.fire({
+                        title: "Validation Error",
+                        icon: "error",
+                        text: data.message || "Something is wrong.",
+                      });
+                  }
+                )
+            }else{
+                Swal.fire({
+                    title: 'Error',
+                    text: errorData.message || 'Something went wrong!',
+                    icon: 'error',
+                  });
+            }
+
+        }   
+    }catch (error) {
         console.error("Error submitting review:", error);
-        alert("Network error. Please check your connection.");
-    }
+      
+        Swal.fire({
+            title: "Something is wrong",
+            icon: "error",
+            text: "Network error. Please check your connection.",
+          });
+        
+}
+        }
     };
     const handleRating = (productId, value)=>{
         setRating((prev) => ({ ...prev, [productId]: value }));
@@ -97,6 +134,8 @@ export const MyProducts = () => {
                             </span>
                             )
                         }
+
+
                                     <img
                                         width="200px"
                                        
@@ -145,18 +184,25 @@ export const MyProducts = () => {
                      </div>
                                 
                            <br/>
-               <input type="hidden" name="rating" value={rating[item?.id||0]} />
+               <input type="hidden" name="rating" value={rating[item?.id||"0"]} />
    
                                <input type="hidden" name="username" value={name} onChange={(e)=>setUserName(e.target.value)}/>
                                <label>Comment : </label>  <br/>
                                <textarea name="comment" onChange={(e)=>setComment(e.target.value)} className='px-4 py-2 border-2 border-solid-gray-400'></textarea>
                                <br/>
                                <label>You can upload image if you want for review : </label>
-                               <br/><input type='file' name="image"
-                                 onChange={(e) => setImage(e.target.files[0])}
-            
-                                className='text-center text-sm text-orange-700 py-2 px-2 my-2 rounded-lg border-2 border-solid-black  text-black'/>
-                                
+                               <br/>
+                               <input type="file"
+                            id="image"
+                            name="image"
+                           accept="image/png, image/jpeg, image/gif"
+                           onChange={(e) => setImage(e.target.files[0])} 
+                            className='text-center text-sm text-orange-700 py-2 px-2 my-2 
+                               rounded-lg border-2 border-solid-black  text-black'/>
+                              
+
+                               
+                               
                                  <input type='submit' name="Submit" value="Submit" className='text-center py-2 px-5 my-2 rounded-lg bg-green-500 text-black'/>
                                       </form></div>
                               

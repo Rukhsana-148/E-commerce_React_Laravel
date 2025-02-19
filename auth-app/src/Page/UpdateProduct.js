@@ -92,6 +92,7 @@ return (
       <input
         type="number"
         name="price"
+        min="0"
         value={price}
         onChange={(e) => setPrice(e.target.value)}
         placeholder="Enter product price"
@@ -101,7 +102,7 @@ return (
       <input
         type="number"
         name="qunt"
-        
+        min="1"
         onChange={(e) => setInQ(e.target.value)}
         placeholder="Increase product quantity"
         className="border-2 border-green-300 rounded-lg px-5 py-3 mb-3"

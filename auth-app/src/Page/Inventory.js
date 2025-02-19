@@ -10,19 +10,27 @@ export const Inventory = () => {
   const [totalItems, setTotalItems] = useState(0);
   const [totalSold, setTotalSold] = useState(0);
   const [totalRevenue, setTotalRevenue] = useState(0);
-  
+  const [empty, setEmpty] = useState(false)
   const { id } = useParams();
 
   useEffect(() => {
     const fetchData = async () => {
       let result = await fetch(`http://localhost:8000/api/inventory/${id}`);
       result = await result.json();
-      setProducts(result);
+ 
+       
+      const updateProducts = Object.entries(result).map(([key, item])=>({
+           ...item,
+           zero:item?.quantity===0,
+          
+      }));
+      setProducts(updateProducts);
       setTotalItems(result.length);
-
+     
       // Fetch sales data for each product
       result.forEach(product => {
         fetchSalesData(product.id);
+        
       });
     };
     fetchData();
@@ -85,12 +93,23 @@ export const Inventory = () => {
 
     const textResponse = await result.json();
     console.log(textResponse);
+    if(result.ok){
+      
+      Swal.fire({
+        title: "Quantity is Increased!",
+        icon: "success",
+        text: `${quant} is added to the list`,
+      });
 
-    Swal.fire({
-      title: "Quantity is Increased!",
-      icon: "success",
-      text: `${quant} is added to the list`,
-    });
+      setProducts((prevProducts)=>
+        prevProducts.map((product)=>
+
+        product.id == productId ? {...product, quantity:(product.quantity||0)+parseInt(quant, 10)}
+        :product
+        )
+      )
+    }
+   
   };
 
   return (
@@ -114,14 +133,34 @@ export const Inventory = () => {
               const sales = salesData[item.id] || { totalQuantitySold: 0, totalPrice: 0 };
               return (
                 <div className='border-2 border-green-300 rounded-md px-2 py-2' key={item.id}>
-                  <div className="h-[250px] justify-items-center shadow-b-lg">
+                  <div className="h-[290px] justify-items-center shadow-b-lg">
+                  {
+                            (item?.reason!==null)&& (
+                                <span className="flex px-3 py-1 w-[150px] absolute font-mono rounded-lg bg-rose-500 text-white">
+                                {item?.reason} OFFER- {item?.amount}%
+                            </span>
+                            )
+                        }
                     <img width="200px" className="pt-3" src={`http://127.0.0.1:8000/${item?.image}`} alt={item?.name} />
+                 
                   </div>
 
-                  <div className="h-[420px] pb-2 overflow-hidden">
+                  <div className="h-[490px] pb-2 overflow-hidden">
                     <p className='font-bold text-xl'>{item.name}</p>
                     <p className='font-normal text-sm'>{item.description}</p>
-                    <p className=''>Price: {item.price} TK</p>
+                    {
+                            (item?.reason!==null)?(
+                                <span className="font-semibold  mb-1 ">
+                                     <p className='font-semibold   '>Product Price:<span className='line-through'>{item?.price} TK</span></p>
+                               <p className='text-rose-500'>Discount Price :  
+                                {
+                                    ((100-item?.amount)*item?.price)/100
+                                } TK
+                                </p>
+                            </span>
+                            ):<>   <p className='font-semibold'>Product Price: {item?.products?.price} TK</p></>
+                        }
+                          
                     {sales.totalQuantitySold > 0 ? (
                       <>
                         <p className=''>Total Sold: {sales.totalQuantitySold}</p>
@@ -131,26 +170,27 @@ export const Inventory = () => {
                       <p className='font-bold text-md text-center'>No Product is sold yet!</p>
                     )}
 
-                    {item.quantity === 0 ? (
-                      <>
-                        <p className='sm text-red-500 my-2 text-center'>
-                          There are no products in stock.
-                        </p>
-                        <form onSubmit={(e) => increaseQuant(e, item.id)} className="my-2">
-                          <input
-                            type='number'
-                            onChange={(e) => setQuant(e.target.value)}
-                            placeholder='Increase product quantity'
-                            className='border-2 border-solid-gray-600 text-black rounded-lg px-3 py-3 my-2'
-                          />
-                          <button type="submit" className='px-5 w-[250px] py-2 rounded-lg bg-black text-white text-sm'>
-                            Increase Quantity
-                          </button>
-                        </form>
-                      </>
-                    ) : (
-                      <p className=''>Quantity: {item.quantity}</p>
-                    )}
+                
+                        
+                        {
+                         item?.quantity===0 ? <><p className='sm text-green-500 font-semibold my-2 text-center'>
+                         
+                         {quant} items will be added
+                       </p>  <form onSubmit={(e) => increaseQuant(e, item.id)} className="my-2">
+                         <input
+                           type='number'
+                           min="1"
+                           onChange={(e) => setQuant(e.target.value)}
+                           placeholder='Increase product quantity'
+                           className='border-2 border-solid-gray-600 text-black rounded-lg px-3 py-3 my-2'
+                         />
+                         <button type="submit" className='px-5 w-[250px] py-2 rounded-lg bg-black text-white text-sm'>
+                           Increase Quantity
+                         </button>
+                       </form> </>:<p>Quantity: {item.quantity||quant}</p>
+                        }
+                        
+                     
                   </div>
 
                   <div className="flex justify-items-center">
