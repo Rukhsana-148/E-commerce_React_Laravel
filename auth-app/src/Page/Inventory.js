@@ -113,26 +113,26 @@ export const Inventory = () => {
   };
 
   return (
-    <div className=' mt-[70px]'>
-      <p className='py-7 text-2xl font-mono font-semibold text-green-700'>Inventory Management</p>
+    <div className=' mt-[70px] bg-rose-100'>
+      <p className='py-7 text-2xl font-mono font-semibold text-rose-700'>Inventory Management</p>
 
       {totalItems !== 0 ? (
         <>
-          <p className='font-mono text-lg  px-5 py-2 text-green-700'>
+          <p className='font-mono text-md  px-5 text-rose-500'>
             Total Items: <span className='font-bold '>{totalItems}</span>
           </p>
-          <p className='font-mono text-lg px-5 py-2 text-green-700'>
+          <p className='font-mono text-md px-5 text-rose-500'>
             Total Sold Items: <span className='font-bold'>{totalSold}</span>
           </p>
-          <p className='font-mono text-lg px-5 py-2 text-green-700'>
+          <p className='font-mono text-md px-5  text-rose-500'>
             Total Revenue: <span className='font-bold'>{totalRevenue} TK</span>
           </p>
 
-          <div className="md:grid md:grid-cols-4 gap-3 px-3 py-5">
+          <div className="md:grid md:grid-cols-3 gap-2 px-3 py-5 lg:ml-[150px]">
             {products.map((item) => {
               const sales = salesData[item.id] || { totalQuantitySold: 0, totalPrice: 0 };
               return (
-                <div className='border-2 border-green-300 rounded-md px-2 py-2' key={item.id}>
+                <div className='border-2 md:w-[350px] ml-2 border-rose-400 rounded-md px-2 py-2' key={item.id}>
                   <div className="h-[290px] justify-items-center shadow-b-lg">
                   {
                             (item?.reason!==null)&& (
@@ -158,7 +158,7 @@ export const Inventory = () => {
                                 } TK
                                 </p>
                             </span>
-                            ):<>   <p className='font-semibold'>Product Price: {item?.products?.price} TK</p></>
+                            ):<>   <p className='font-semibold'>Product Price: {item?.price} TK</p></>
                         }
                           
                     {sales.totalQuantitySold > 0 ? (
@@ -193,7 +193,7 @@ export const Inventory = () => {
                      
                   </div>
 
-                  <div className="flex justify-items-center">
+                  <div className="md:flex justify-items-center">
                     <p onClick={() => remove(item.id)} className='mx-1 w-[100px] px-2 text-sm py-2 rounded-lg text-white bg-red-500'>
                       Remove
                     </p>

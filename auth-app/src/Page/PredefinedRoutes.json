@@ -1,0 +1,20 @@
+ [
+    {"path":"/register"},
+    {"path":"/editProfile/:id"},
+    {"path":"/login"},
+    {"path":"/addProduct"},
+    {"path":"/forgetPassword"},
+    {"path":"/reset-password/:token"},
+    {"path":"/"},
+    {"path":"/products"},
+   {"path": "/allCart"},
+    {"path":"/allCart/cart/:id"},
+    {"path":"/myProducts/:id"},
+    {"path":"/detail/:id"},
+    {"path":"/updateProduct/:id"},
+    {"path":"/inventory/:id"},
+    {"path":"/discount/:id"},
+   {"path": "/sellers"}
+  ]
+  
+ 

@@ -48,7 +48,7 @@ console.log(formData)
 
   return (
     <div className='text-left mt-[70px]'>
-      <p className="text-center text-2xl font-semibold py-[20px] text-green-400">Add Products</p>
+      <p className="text-center text-2xl font-semibold py-[20px] text-rose-400">Add Products</p>
       <div className="grid justify-items-center">
         <form onSubmit={addProduct} encType="multipart/form-data">
           <input
@@ -57,7 +57,7 @@ console.log(formData)
             value={name}
             onChange={(e) => setName(e.target.value)}
             placeholder="Enter product name"
-            className="border-2 border-green-300 rounded-lg px-5 py-3 mb-3"
+            className="border-2 border-rose-300 rounded-lg md:px-5 px-2 py-3 mb-3"
           /><br />
           
           <input
@@ -66,14 +66,14 @@ console.log(formData)
             value={desc}
             onChange={(e) => setDesc(e.target.value)}
             placeholder="Enter product description"
-            className="border-2 border-green-300  rounded-lg px-5 py-3 mb-3"
+            className="border-2 border-rose-300 outline-rose-600 rounded-lg md:px-5 px-2 py-3 mb-3"
           /><br />
 
           <input
             type="file"
             name="image"
             onChange={(e) => setImage(e.target.files[0])}
-            className="border-2 border-green-300  rounded-lg px-3 py-3 mb-3"
+            className="border-2 border-rose-300 outline-rose-600  rounded-lg md:px-3 px-2 py-3 mb-3"
           /><br />
 
           <input
@@ -83,7 +83,7 @@ console.log(formData)
             value={price}
             onChange={(e) => setPrice(e.target.value)}
             placeholder="Enter product price"
-            className="border-2 border-green-300  rounded-lg px-5 py-3 mb-3"
+            className="border-2 border-rose-300 outline-rose-600 rounded-lg md:px-5 px-2 py-3 mb-3"
           /><br />
 
           <input
@@ -93,11 +93,11 @@ console.log(formData)
             value={qunt}
             onChange={(e) => setQunt(e.target.value)}
             placeholder="Enter product quantity"
-            className="border-2 border-green-300  rounded-lg px-5 py-3 mb-3"
+            className="border-2 border-rose-300 outline-rose-600  rounded-lg md:px-5 px-2 py-3 mb-3"
           /><br />
- <select     className="border-2 border-green-300  rounded-lg px-3 py-3"
+ <select     className="border-2 border-ose-300 outline-rose-600 rounded-lg md:px-3 px-2 py-3"
           name='type' onChange={(e)=>setType(e.target.value)}>
-              <option  className='ml-2 px-4 py-1 rounded-lg'>Select Shoe Type</option>
+              <option  className='ml-2 md:px-4 py-1 rounded-lg'>Select Shoe Type</option>
                            
                                 <option value="Baby Shoe" className='ml-2 px-4 py-1 rounded-lg'>Baby Shoe</option>
                                 <option value="Hill" className='ml-2 px-4 py-1 rounded-lg'>Hill</option>
@@ -105,7 +105,7 @@ console.log(formData)
                                   </select> 
           <br />
 
-          <button type="submit" className=" bg-green-600 text-white  px-10 py-3 rounded-2xl my-4 hover:bg-gray-500 hover:text-black">
+          <button type="submit" className=" bg-rose-600 text-white  px-10 py-3 rounded-2xl my-4 hover:bg-gray-500 hover:text-black">
             Add Product
           </button>
         </form>

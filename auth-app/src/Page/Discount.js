@@ -78,11 +78,11 @@ console.log(items)
     };
     
   return (
-    <div className=' mt-[120px]'>
+    <div className=' mt-[70px] '>
        <div className="flex justify-center items-center">
-   <form onSubmit={handleSubmit} className='text-left '>
-    <p className='text-center text-2xl text-green-600'> Discount   </p>
-   <select     className="border-2 border-green-300  rounded-lg px-3 w-[350px] py-3 mb-3"
+   <form onSubmit={handleSubmit} className='md:text-left '>
+    <p className='text-center text-2xl text-rose-600 py-3'> Discount   </p>
+   <select     className="border-2 border-rose-300 outline-rose-600  rounded-lg px-3 md:w-[350px] py-3 mb-3"
           name='reason' required onChange={(e)=>setReason(e.target.value)} >
             {
               (reason ? <><option value={items?.reason} className='ml-2 px-4 py-1 rounded-lg'>{items?.reason} </option>
@@ -101,26 +101,27 @@ console.log(items)
           <input
             type="number"
             required
+            min="1"
             name="amount"
             value={amount}
             onChange={(e)=>setAmount(e.target.value)}
-            placeholder=" Discount Parcentage"
-            className="border-2 border-green-300  rounded-lg px-5 py-3 mb-3"
-          /><br />
+            placeholder="Discount Parcentage"
+            className="border-2 w-[200px] md:w-[350px] border-rose-300 outline-rose-600  rounded-lg px-5 py-3 mb-3"
+          />
            <input
             type="hidden"
             value={id}
             name="id"
             placeholder=" Discount Parcentage"
-            className="border-2 border-green-300  rounded-lg px-5 py-3 mb-3"
+            className="border-2 border-rose-300 outline-rose-600  rounded-lg px-5 py-3"
           /><br/>
-          <input type='submit' name='submit' value="Ok" className='px-5  py-2 w-[350px] rounded-md bg-green-500 text-white'/>
+          <input type='submit' name='submit' value="Ok" className='px-5  py-1 md:w-[350px] rounded-md bg-green-500 text-white'/>
    </form>
    <br/>
    </div>
 <div>
 {
-            reason && <><button onClick={()=>resetDiscount(id)} className='px-5 py-2 mt-2 w-[350px] rounded-md bg-rose-500 text-white'>Reset</button>
+            reason && <><button onClick={()=>resetDiscount(id)} className='px-5 py-2 mt-2 md:w-[350px] rounded-md bg-rose-500 text-white'>Reset</button>
   </>
           }
 </div>

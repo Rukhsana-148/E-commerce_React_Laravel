@@ -63,7 +63,7 @@ export const Carts = ({cartCount}) => {
                 <>
                     <p className='text-center py-5 font-semibold font-mono text-lg text-green-800'>Your Cart Items</p>
            <div className="overflow-x-auto">
-           <table className="table-auto w-full border-collapse border border-green-200">
+           <table className="table-auto  w-full border-collapse border border-green-200">
                         <thead>
                             <tr className="bg-green-600">
                                 <th className="border-1 border-green-300 px-4 py-2">Name</th>

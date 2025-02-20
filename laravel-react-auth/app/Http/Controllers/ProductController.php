@@ -154,7 +154,7 @@ public function productUpdate(Request $req){
   
       // Handle ratings array
       $ratings = $product->rating ? json_decode($product->rating, true) : [];
-      if ($request->input('rating')) {
+      if ($request->input('rating') && $request->input('rating')>0) {
           $ratings[] = $validate['rating'];  // Add the rating to the ratings array
           $product->rating = json_encode($ratings);  // Store updated ratings
       }
@@ -213,6 +213,48 @@ public function getTotalSell($id){
 
     return response()->json($sales);
 }
+
+
+  public function getTotalSellOwner($userId)
+  {
+      // Find all products that belong to the specified user (owner)
+      $productIds = Product::where('owner', $userId)->pluck('id');
+  
+      // Calculate the total sales (quantity and price) for these products
+      $sales = Sell::selectRaw('SUM(quantity) as totalQuantity, SUM(price) as totalPrice')
+          ->whereIn('product_id', $productIds)  // Filter sales for the product IDs that belong to the user
+          ->groupBy('product_id')  // Group by product_id to get totals for each product
+          ->get();  // Get the result for all products
+  
+      // Return the result as a JSON response
+      return response()->json($sales);
+  }
+  public function getSalesWithTime($userId)
+  {
+     
+      $productIds = Product::where('owner', $userId)->pluck('id');
+  
+      // Calculate the total sales (quantity and price) for these products
+      $sales = Sell::selectRaw('price, DATE(created_at) as time')
+          ->whereIn('product_id', $productIds)->get();  // Get the result for all products
+  
+      // Return the result as a JSON response
+      return response()->json($sales);
+  }
+
+
+  public function getTotalOwnProduct($userId)
+  {
+      // Calculate the total sales (quantity and price) for these products
+      $sales = Product::selectRaw('SUM(quantity) as totalQuantity')
+          ->where('owner', $userId)  
+          ->get(); 
+  
+      // Return the result as a JSON response
+      return response()->json($sales);
+  }
+
+
 
 public function sendRequest(Request $request){
 

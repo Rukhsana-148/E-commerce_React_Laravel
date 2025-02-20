@@ -37,13 +37,14 @@ export const Seller = () => {
                           });
      }
   return (
-    <div className='mt-[70px]'>
+    <div className='mt-[70px] lg:ml-[150px]'>
 
 {
-  users.length!=0?<><p className='font-semibold text-xl text-center py-4'>Seller Requests</p>
-   <table className="table-auto w-full my-4 border-collapse border border-gray-200">
+  users.length!=0?<><p className='font-semibold text-xl text-rose-500 text-center py-4'>Seller Requests</p>
+  <div className=' overflow-x-auto'>
+   <table className="table-auto text-rose-800 w-full my-4 border-collapse border border-gray-200">
   <thead>
-    <tr className="bg-gray-100">
+    <tr className="bg-gray-100 text-rose-500">
  
       <th className="border border-gray-300 px-4 py-2">Image</th>
       <th className="border border-gray-300 px-4 py-2">Name</th>
@@ -67,8 +68,8 @@ export const Seller = () => {
           <td className="border border-gray-300 px-4 py-2 text-center">{item?.users?.phone}</td>
           <td className="border border-gray-300 px-4 py-2 text-center">{item?.category}</td>
        
-          <td className="border border-gray-300 px-4 py-2 text-center">
-<button onClick={()=>approveUser(item?.users?.id)}  className="bg-blue-500 text-white px-3 py-1 rounded">Approve</button>
+          <td className="border border-gray-300 px-4 py-2 text-center ">
+<button onClick={()=>approveUser(item?.users?.id)}  className="bg-blue-500 mr-1 mb-1 text-white px-3 py-1 rounded">Approve</button>
        
              <button onClick={()=>deleteUser(item.id)} className="bg-red-500 text-white px-3 py-1 rounded">Remove</button>
        
@@ -83,7 +84,7 @@ export const Seller = () => {
    
     
   </tbody>
-</table></>:<><p className='text-center text-red-500 text-lg font-mono py-6'>No Requests</p></>
+</table> </div></>:<><p className='text-center text-red-500 text-lg font-mono py-6'>No Requests</p></>
 }
 
     

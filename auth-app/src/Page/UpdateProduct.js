@@ -59,8 +59,8 @@ const response = await fetch(`http://localhost:8000/api/productUpdate`, {
 }
 
 return (
-<div className='text-left  mt-[120px]'>
-<p className="text-center text-2xl font-semibold text-green-500">Update Products</p>
+<div className='text-left  mt-[70px]'>
+<p className="text-center text-2xl font-semibold text-green-500 py-2">Update Products</p>
 <div className='grid justify-items-center'>
 <form  encType="multipart/form-data" onSubmit={handleUpdate}>
       <input

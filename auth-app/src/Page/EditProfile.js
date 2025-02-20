@@ -7,7 +7,7 @@ export const EditProfile = ({profile, setProfile, setNotify}) => {
     const fileInputRef = useRef(null);
     const [name, setName] = useState('');
     const [phone, setPhone] = useState('');
-    const [email, setEmail] = useState('');
+   
     const [image, setImage] = useState(null);
     const [role, setRole]  = useState('user');
     const [cat, setCat] = useState("");
@@ -22,7 +22,7 @@ export const EditProfile = ({profile, setProfile, setNotify}) => {
             result = await result.json();
             setUser(result);
             setName(result?.name||"")
-            setEmail(result?.email||"")
+          
             setPhone(result?.phone||"")
             setRole(result?.role||"")
         }
@@ -38,7 +38,7 @@ export const EditProfile = ({profile, setProfile, setNotify}) => {
   
       const formData = new FormData();
       formData.append("name", name);
-      formData.append("email", email);
+
       formData.append("phone", phone);
       if (image) {
           formData.append("image", image);
@@ -133,14 +133,7 @@ export const EditProfile = ({profile, setProfile, setNotify}) => {
       
        <input type="file" ref={fileInputRef} style={{display:'none'}} 
          onChange={(e) => setImage(e.target.files[0])}/>
-       <input
-        type="text"
-        name="email"
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
-       
-        className="border-2 border-solid-black radius-lg px-5 py-3 mb-3"
-      /><br />
+      <br />
       <input
         type="text"
         name="phone"

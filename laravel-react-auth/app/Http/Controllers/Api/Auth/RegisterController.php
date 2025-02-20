@@ -182,7 +182,7 @@ class RegisterController extends Controller
         try {
             $validate = $request->validate([
                 'name' => 'sometimes|string|max:200',
-                'email' => 'sometimes|string|email|max:255',
+             
                 'phone' => 'sometimes|string|max:11',
                 'image' => 'nullable|image|mimes:jpg,gif,png|max:2048',
             ]);
@@ -193,9 +193,7 @@ class RegisterController extends Controller
         if (isset($validate['name'])) {
             $profile->name = $validate['name'];
         }
-        if (isset($validate['email'])) {
-            $profile->email = $validate['email'];
-        }
+       
         if (isset($validate['phone'])) {
             $profile->phone = $validate['phone'];
         }

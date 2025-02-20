@@ -1,4 +1,5 @@
 import './App.css';
+import logo from './logo.png';
 import { useState, useEffect, createContext } from 'react';
 import { Navbar, Nav, NavDropdown } from 'react-bootstrap';
 import { BrowserRouter as Router, Routes, Route, Link, NavLink, useLocation } from 'react-router-dom';
@@ -22,7 +23,7 @@ import { Inventory } from './Page/Inventory';
 import { Seller } from './Page/Seller';
 import { Discount } from './Page/Discount';
 import { NotFound } from './Page/NotFound';
-import PredefinedRoutes from './Page/PredefinedRoutes';
+import  allRoutes from './Page/PredefinedRoutes.json'
 
 export const AuthContext = createContext();
 
@@ -36,16 +37,39 @@ function App() {
   const [loggedIn, setLoggedIn] = useState(false);
   const [user_id, setUserId] = useState(null);
   const [menu, setMenu] = useState(false);
+  const [inNav, setInNav] = useState(true);
   const navigate = useNavigate();
 
   const users = JSON.parse(localStorage.getItem("user"));
   
   const location = useLocation();
+   
+     
+  useEffect(() => {
+    const isRouteExist = allRoutes.some(route => {
+      const basePath = route.path.split('/:')[0]; 
+      const regex = new RegExp(`^${basePath.replace('/', '\\/')}\\/\\d+$`);
 
-  // Exclude Navbar on the NotFound page
-  const excludeNavbar = !PredefinedRoutes.some(route => location.pathname.match(new RegExp(route.replace(/:\w+/g, '\\w+'))));
+      
+      if (location.pathname === basePath) {
+        return true; 
+      } else if (regex.test(location.pathname)) {
+        const id = location.pathname.split('/').pop(); 
+        return /^\d+$/.test(id); 
+      }
 
-  console.log("Navbar",excludeNavbar)
+      return false;
+    });
+
+    setInNav(isRouteExist); // Set navigation status based on validation
+  }, [location.pathname, allRoutes]);
+
+//go gome
+ const  goHome = () =>{
+navigate('/')
+ }
+
+
   useEffect(() => {
     // Retrieve user data from localStorage
     const storedUser = JSON.parse(localStorage.getItem("user"));
@@ -215,17 +239,17 @@ console.log(data)
 
   return (
     <div className="App">
-     {
-
-     excludeNavbar ?
-      <AuthContext.Provider value={{ loginHandle, setNotification }}>
+      {
+        inNav?
       
-          <div className="body border-b-2 border-green-700 rounded-b-xl bg-white   shadow-b-lg flex justify-between items-cnter h-[75px]  text-white py-2 pl-4 fixed w-full top-0 left-0 z-50">
+     
+    <AuthContext.Provider value={{ loginHandle, setNotification }}>
+      
+          <div className="body border-b-2 border-rose-700 bg-white   shadow-b-lg flex justify-between items-cnter h-[75px]  text-white py-2 pl-4 fixed w-full top-0 left-0 z-50">
             <div className="flex  pt-[2px] ">
-            
-              <Link to="/">
+                <Link to="/">
                 <img
-                  src="logo.png"
+                  src={logo}
                   alt="logo"
                   className="-mt-[15px] h-[50px] md:h-[60px] w-auto   mr-[10px] md:rounded-full"
                 />
@@ -233,12 +257,56 @@ console.log(data)
             </div>
            
             <div className="right pt-[20px]  lg:bg-white">
+       
             <p className='block lg:hidden text-black fixed top-4 right-4 z-50' onClick={()=>setMenu(!menu)} ><FaBars></FaBars></p>
         
-              <ul className={`${menu?"block border-2 border-green-500 mt-2":"hidden"} lg:flex bg-white  rounded-lg   lg:bg-white lg:-mt-[57px] flex-col lg:flex-row lg:items-center text-left `}>
+              <ul className={`${menu?"opacity-100 transform transition-opacity duration-5000 border-2 border-green-500 mt-2 translate-x-0":"hidden"} lg:flex transform bg-white transition-transform duration-3000  rounded-lg   lg:bg-white lg:-mt-[57px] flex-col lg:flex-row lg:items-center text-left `}>
                 {profile ? (
                   <>
-                    {(profile?.role || profile?.user?.role) === "admin" && (
+               {
+               (profile?.role || profile?.user?.role) === "user" && (
+                    <> <li className="lg:mt-[30px]  text-sm py-1 -ml-6  px-2 rounded-lg">
+                    <NavLink 
+                      className={({isActive}) =>
+                        isActive
+                      ? "no-underline text-green-600 lg:px-3 "  
+                      : "no-underline text-black lg:px-3 " 
+                      }
+                     to="/products">
+                      Products
+                    </NavLink>
+                  </li>
+                  <li>
+                   
+                 
+                  </li>
+                  <li className="lg:mt-[30px]  text-sm py-1 -ml-4   px-2 rounded-lg">
+                    <NavLink
+                      className={({isActive}) =>
+                        isActive
+                      ? "no-underline text-green-600 lg:px-3 "  
+                      : "no-underline text-black lg:px-3 " 
+                      }
+                      to={`/myProducts/${profile?.user?.id || profile?.id}`}
+                    >
+                      My Products
+                    </NavLink>
+                  </li>
+                  <li className="lg:mt-[30px]  text-sm py-1 -ml-4   px-2 rounded-lg">
+                    <sup className='text-black text-md'>{count}</sup>
+                    <NavLink
+                      className={({isActive}) =>
+                        isActive
+                      ? "no-underline text-green-600 lg:px-3 "  
+                      : "no-underline text-black lg:px-3  " 
+                      }  to="/allCart">
+                      <FaShoppingCart></FaShoppingCart>
+                    </NavLink>
+                  </li></>
+               )
+               }  
+                   <div className="md:hidden">
+                   {(profile?.role || profile?.user?.role) === "admin" && (
                       <>
                       <li className="lg:mt-[30px]  text-sm py-1 -ml-6   px-3 rounded-lg">
                         <NavLink to="/addProduct" 
@@ -265,6 +333,7 @@ console.log(data)
                     </li>
                       </>
                     )}
+
                     {(profile?.id || profile?.user?.id) === 2 && (
                       <li className="lg:mt-[30px]  text-sm py-1 -ml-6 px-3 rounded-lg">
                       <NavLink 
@@ -278,40 +347,7 @@ console.log(data)
                         </NavLink>
                       </li>
                     )}
-                    <li className="lg:mt-[30px]  text-sm py-1 -ml-6  px-2 rounded-lg">
-                      <NavLink 
-                        className={({isActive}) =>
-                          isActive
-                        ? "no-underline text-green-600 lg:px-3 "  
-                        : "no-underline text-black lg:px-3 " 
-                        }
-                       to="/products">
-                        Products
-                      </NavLink>
-                    </li>
-                    <li className="lg:mt-[30px]  text-sm py-1 -ml-4   px-2 rounded-lg">
-                      <NavLink
-                        className={({isActive}) =>
-                          isActive
-                        ? "no-underline text-green-600 lg:px-3 "  
-                        : "no-underline text-black lg:px-3 " 
-                        }
-                        to={`/myProducts/${profile?.user?.id || profile?.id}`}
-                      >
-                        My Products
-                      </NavLink>
-                    </li>
-                    <li className="lg:mt-[30px]  text-sm py-1 -ml-4   px-2 rounded-lg">
-                      <sup className='text-black text-md'>{count}</sup>
-                      <NavLink
-                        className={({isActive}) =>
-                          isActive
-                        ? "no-underline text-green-600 lg:px-3 "  
-                        : "no-underline text-black lg:px-3  " 
-                        }  to="/allCart">
-                        <FaShoppingCart></FaShoppingCart>
-                      </NavLink>
-                    </li>
+                   </div>
 
                    
                 
@@ -377,7 +413,64 @@ console.log(data)
                   </>
                 )}
               </ul>
+
+              
             </div>
+          </div>
+
+        
+          <div className="rounded hidden md:block mt-[5px] text-xl h-screen bg-rose-500 mr-[1000px] text-white fixed z-50 text-left text-black">
+          {(profile?.role || profile?.user?.role) === "admin" && (
+                      <>
+                          <li className="lg:mt-[30px]  text-sm py-1 -ml-6   px-3 rounded-lg">
+                        <NavLink to="/" 
+                        className={({isActive}) =>
+    isActive
+      ? "no-underline text-rose-700 lg:px-5 py-2 rounded-md bg-white "  
+      : "no-underline text-white lg:px-5 py-1 rounded-md  " 
+  }>
+                          Dashboard
+                        </NavLink>
+                      </li>
+                      <li className="lg:mt-[30px]  text-sm py-1 -ml-6   px-3 rounded-lg">
+                        <NavLink to="/addProduct" 
+                        className={({isActive}) =>
+    isActive
+      ? "no-underline text-rose-700 lg:px-5 py-2 rounded-md bg-white "  
+      : "no-underline text-white lg:px-5 py-1 rounded-md  " 
+  }>
+                          Add Products
+                        </NavLink>
+                      </li>
+                      <li className="lg:mt-[30px]  text-sm py-1 -ml-4   px-2 rounded-lg">
+                    <NavLink 
+                    className={({isActive}) =>
+                      isActive
+                    ? "no-underline text-rose-700 lg:px-5 py-2 rounded-md bg-white "  
+                    : "no-underline text-white lg:px-5" 
+                    } 
+                        to={`/inventory/${profile?.user?.id || profile?.id}`}
+                      >
+                        Inventory
+                      </NavLink>
+                    
+                    </li>
+                      </>
+                    )}
+
+                    {(profile?.id || profile?.user?.id) === 2 && (
+                      <li className="lg:mt-[30px]  text-sm py-1 -ml-6 px-3 rounded-lg">
+                      <NavLink 
+                        className={({isActive}) =>
+                          isActive
+                        ? "no-underline text-rose-700 lg:px-5 py-2 rounded-md bg-white "  
+                        : "no-underline text-white lg:px-5 " 
+                        }
+                        to="/sellers">
+                          Seller
+                        </NavLink>
+                      </li>
+                    )}
           </div>
 
           <Routes>
@@ -390,20 +483,27 @@ console.log(data)
             <Route path="/addProduct" element={<AddProduct />} />
             <Route path="/forgetPassword" element={<ForgetPassword />} />
             <Route path="/reset-password/:token" element={<ResetPassword />} />
-            <Route path="/" element={<Home mainPage={cartHandle} />} />
+              <Route path="/inventory/:id" element={<Inventory />} />
+             
+              <Route path="/" element={<Home mainPage={cartHandle} />} />
+         
+            
             <Route path="/products" element={<Products product={product} addToCart={countHandle} />} />
             <Route path="/allCart" element={<Carts cartCount={setCount}/>} />
             <Route path="/allCart/cart/:id" element={<SingleCart cartCount={setCount}/>} />
             <Route path="/myProducts/:id" element={<MyProducts />} />
             <Route path="/detail/:id" element={<SingleProduct addToCart={countHandle} />} />
             <Route path="/updateProduct/:id" element={<UpdateProduct />} />
-            <Route path="/inventory/:id" element={<Inventory />} />
+          
             <Route path="/discount/:id" element={<Discount />} />
             <Route path="/sellers" element={<Seller />} />
+          
             <Route path="*" element={<NotFound/>}/>
                       </Routes>
         
-      </AuthContext.Provider>:<></>}
+      </AuthContext.Provider>:<div className='flex h-screen overflow-y-hidden justify-center items-center'>
+        <img src="404err.jpg" />
+      <p onClick={goHome} className='absolute font-bold px-12 py-3 rounded-lg text-white bg-rose-500'>Home</p></div>}
     </div>
   );
 }

@@ -32,6 +32,9 @@ Route::get('/inventory/{id}', [ProductController::class, 'inventory']);
 Route::post('/increaseQuant', [ProductController::class, 'increaseQuant']);
 Route::post('/increaseQuant', [ProductController::class, 'increaseQuant']);
 Route::get('/getTotalSell/{id}', [ProductController::class, 'getTotalSell']);
+Route::get('/getTotalSellOwner/{id}', [ProductController::class, 'getTotalSellOwner']);
+
+Route::get('/getTotalOwnProduct/{id}', [ProductController::class, 'getTotalOwnProduct']);
 Route::post('/sendRequest', [ProductController::class, 'sendRequest']);
 Route::get('/allRequest', [ProductController::class, 'allRequest']);
 Route::get('/deleteUser/{id}', [ProductController::class, 'deleteUser']);
@@ -39,6 +42,7 @@ Route::get('/approveUser/{id}', [ProductController::class, 'approveUser']);
 Route::post('/discountProduct', [ProductController::class, 'discountProduct']);
 Route::get('/resetDiscount/{id}', [ProductController::class, 'resetDiscount']);
 
+Route::get('/getSalesWithTime/{id}', [ProductController::class, 'getSalesWithTime']);
 Route::middleware([CorsMiddleware::class])->group(function () {
     Route::post('/auth/forgetPassword', [RegisterController::class, 'forgetPassword']);
    

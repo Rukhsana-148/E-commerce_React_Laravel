@@ -34,8 +34,10 @@ export const MyProducts = () => {
 
 
     const handleReview = async (e, productId, id) => {
+       
+        
         e.preventDefault();
-        if(rating[id] < 1 && (comment === "" || !image)){
+        if((rating[id] === undefined || rating[id] === 0) && comment.trim() === "" && !image){
            
                 Swal.fire({
                     title: "No Ratng!",
@@ -73,8 +75,9 @@ export const MyProducts = () => {
 
         const data = await response.json();
         console.log("Response:", data);
-         console.log(data)
+     console.log(data)
         if (response.ok) {
+          
              Swal.fire({
                                       title: "Review is Done",
                                       icon: "success",

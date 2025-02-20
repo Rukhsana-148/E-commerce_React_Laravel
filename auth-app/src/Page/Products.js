@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { StarRating } from './StarRating';
+import * as motion from "motion/react-client"
+
 
 export const Products = ({ addToCart }) => {
     const [data, setData] = useState([]);
@@ -66,6 +68,7 @@ export const Products = ({ addToCart }) => {
                     const numericRatings = ratingsArray.map(rating => parseInt(rating));
                     const total = numericRatings.reduce((sum, rating) => sum + rating, 0);
                     avgRating = numericRatings.length > 0 ? total / numericRatings.length : 0;
+                   
                   } catch (error) {
                     console.error("Error parsing ratings for product:", error);
                   }
@@ -74,7 +77,7 @@ export const Products = ({ addToCart }) => {
                 return {
                   ...product,
                   isNew, // Attach the isNew property
-                  averageRating: avgRating.toFixed(1),
+                  averageRating: setAverageRating(avgRating.toFixed(1)),
                 };
               });
       
@@ -99,8 +102,11 @@ export const Products = ({ addToCart }) => {
         };
       
         fetchData();
-      }, [users]); // Add 'users' as a dependency to avoid infinite loops
-      
+      }, [users]); 
+
+
+     
+
     // Filter products based on selected type
     const types = [...new Set(data.map(item => item.type))];
 
@@ -162,6 +168,8 @@ export const Products = ({ addToCart }) => {
 
                   )}
                   <img
+                  
+                  
                     src={"http://127.0.0.1:8000/" + item.image}
                     alt="product"
                     className="w-[130px] h-[120px] -mt-2 mb-1"
@@ -223,14 +231,14 @@ export const Products = ({ addToCart }) => {
                     placeholder='Search products'
                     name="search"
                     onChange={(e) => searchProduct(e.target.value)}
-                    className='px-5 mb-3 py-2 border-2 rounded-lg border-green-600'
+                    className='px-5 mb-3 py-2 border-2 outline-green-800 rounded-lg border-green-400 w-[300px]'
                 />
             </div>
 
             <div className='md:grid md:grid-cols-4 gap-2 mx-2'>
                 {currentItems.length > 0 ? (
                     currentItems.map((item) => (
-                        <div key={item.id} className="card w-[300px] px-2 py-2 my-2">
+                        <div key={item.id} className="card w-[300px] px-3 py-3 my-2">
                             <div className="flex justify-between">
                             {item.isNew && (
                                 <span className="absolute top-2 left-2 bg-green-500 text-white text-xs font-bold px-2 py-1 rounded-lg">
@@ -248,14 +256,20 @@ export const Products = ({ addToCart }) => {
                             </div>
                          
                         
-                            <img src={"http://127.0.0.1:8000/" + item.image} alt="product" className='w-[200px] h-[160px]' />
-                            {item.rating != '0' ? (
-    <div className="average-rating pt-2 justify-items-center">
-        <StarRating rating={item.averageRating} />
-    </div>
-) : (
-    <p className='text-green-500'></p>
-)}
+                            <motion.img
+                             whileHover={{ scale: 1.2 }}
+                             whileTap={{ scale: 0.95 }}
+                             onHoverStart={() => console.log('hover started!')}
+                             src={"http://127.0.0.1:8000/" + item.image}
+                             alt="product" className='w-[200px] h-[160px] p-2' />
+                           
+                             
+                          {averageRating !== null ? (
+                                  <div className="average-rating  pt-2">  <StarRating rating={averageRating} />
+                                  </div>
+                                ) : (
+                                  <div className="average-rating">No ratings available</div>
+                                )}
 
                             <p className='font-semibold'>{item.name}</p>
                             <div className="h-[70px]">

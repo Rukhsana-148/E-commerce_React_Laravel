@@ -1,16 +1,26 @@
 import React, { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
-import { StarRating } from './StarRating'
+import { StarRating } from './StarRating';
 import { FaUser } from 'react-icons/fa'
+import * as motion from "motion/react-client";
+
 export const SingleProduct = ({addToCart}) => {
 
     const [item, setItems]= useState(null);
     const [cmntData, setCmntData] = useState();
     const {id} = useParams();
-   
-    const [averageRating, setAverageRating] = useState(null); // State to store average rating
-     const users = localStorage.getItem("user");
-     console.log("In the single product", users)
+    const [role, setRole] = useState(null);
+
+    const [averageRating, setAverageRating] = useState(null); 
+     const users = JSON.parse(localStorage.getItem("user"));
+     
+     useEffect(()=>{
+      if(users?.user){
+        setRole(users?.user?.role)
+      }else{
+        setRole(users?.role)
+      }
+     }, [users])
 
    useEffect(()=>{
     console.log("Id",id)
@@ -30,15 +40,14 @@ export const SingleProduct = ({addToCart}) => {
    comments = [{comment: cmntData}];
      }
    }
-// Check if item?.rating exists and is a valid JSON string
+
 useEffect(() => {
-    // Check if item?.rating exists and is a valid JSON string
+   
     if (item?.rating && typeof item?.rating === 'string') {
       try {
         const ratingsArray = JSON.parse(item?.rating);
         console.log("Rating", ratingsArray);
 
-        // Map to integers and calculate total
         const numericRatings = ratingsArray.map(rating => parseInt(rating));
         const total = numericRatings.reduce((sum, rating) => sum + rating, 0);
         console.log("Total:", total);
@@ -54,12 +63,14 @@ useEffect(() => {
     }
   }, [item?.rating]); // Dependency array ensures this runs when item.rating changes
   return (
-    <div className="md:flex justify-center items-center">
- <div key={item?.id} className='px-2    mt-[100px]  py-1 rounded-md border-2 border-green-500'>
+    <div className={` ${role==='admin'?"mt-[70px] ":"mt-[100px] "} md:flex justify-center items-center`}>
+     
+
+ <div key={item?.id} className={`px-2 mt-[50px] py-1 rounded-md border-2 border-green-500`}>
                         {/* Check if 'products' exist and render product info */}
                        
                             <div className='md:flex'>
-                              <div className='px-5 justify-items-center'>
+                              <div className='px-5 pt-5 pb-2  justify-items-center'>
                               {
                             (item?.reason!==null)&& (
                                 <span className="flex px-3 py-1 rounded-lg bg-rose-500 text-white">
@@ -67,12 +78,17 @@ useEffect(() => {
                             </span>
                             )
                         }
-                                <img
+                                <motion.img
+                                whileHover={{ scale: 1.2 }}
+                                whileTap={{ scale: 0.95 }}
+                                onHoverStart={() => console.log('hover started!')}
+                                
                                     width="200px"
-                                    className="pt-3"
+                                    className="pb-5"
                                     src={`http://127.0.0.1:8000/${item?.image}`}
                                     alt={item?.name}
                                 />
+                              
                            {averageRating !== null ? (
         <div className="average-rating  pt-2">  <StarRating rating={Math.round(averageRating)} />
         </div>
