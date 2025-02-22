@@ -1,21 +1,33 @@
+import { ellipse } from 'framer-motion/client';
 import React, { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom';
 import Swal from 'sweetalert2';
 export const Seller = () => {
     const [users, setUsers] = useState([]);
+    const [sellerType, setSellerType] = useState();
+    const [id, setId] = useState();
+    const [singleUser, setSingleuser] = useState();
+   
     useEffect(()=>{
            const fetchData = async ()=>{
              let result = await fetch("http://localhost:8000/api/allRequest");
              result  = await result.json();
              setUsers(result)
+             
+            
            }
            fetchData();
-         })
+         }, [])
+
+
+console.log("ID OUTSIDE", sellerType)
+
      const deleteUser = async(userId)=>{
 
  let result= fetch(`http://127.0.0.1:8000/api/deleteUser/${userId}`,{
                         method: 'GET'
                  })
+                 alert(userId)
                  setUsers((prevProducts) => prevProducts.filter((product) => product.id !== userId));
                      Swal.fire({
                             title: "Request is removed",
@@ -24,12 +36,21 @@ export const Seller = () => {
                           });
      }
 
-     const approveUser = async (userId)=>{
- let result= fetch(`http://127.0.0.1:8000/api/approveUser/${userId}`,{
-                        method: 'GET'
+     const approveUser = async (e)=>{
+      e.preventDefault();
+      const formData = new FormData(e.target);
+ 
+ let result= fetch(`http://127.0.0.1:8000/api/approveUser`,{
+                        method: 'POST',
+                        body: formData,
+              headers: {
+                  "Accept": "application/json"
+              }
                  })
-                 setUsers((prevProducts) => prevProducts.filter((product) => product.id !== userId));
-             
+                 console.log(formData)
+                 
+                 setUsers((prevProducts) => prevProducts.filter((product) => product.id !== Number(formData.get("sellId")?.valueOf())));
+                
                      Swal.fire({
                             title: "Request is approved",
                             icon: "success",
@@ -69,8 +90,17 @@ export const Seller = () => {
           <td className="border border-gray-300 px-4 py-2 text-center">{item?.category}</td>
        
           <td className="border border-gray-300 px-4 py-2 text-center ">
-<button onClick={()=>approveUser(item?.users?.id)}  className="bg-blue-500 mr-1 mb-1 text-white px-3 py-1 rounded">Approve</button>
-       
+            <form onSubmit={approveUser}>
+              <input type='hidden'  name='sellerType' value={item?.category}/>
+              <input type='hidden' name='id' value={item?.users?.id} />
+              <input type='hidden' name='sellId' value={item?.id} />
+           
+            
+              <input type='submit' 
+              value='Approve'
+              className='bg-blue-500 mr-1 mb-1 text-white px-3 py-1 rounded'/>
+            </form>
+     
              <button onClick={()=>deleteUser(item.id)} className="bg-red-500 text-white px-3 py-1 rounded">Remove</button>
        
       

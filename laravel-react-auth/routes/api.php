@@ -17,6 +17,7 @@ Route::post('/addProduct', [ProductController::class, 'addProduct']);
 Route::get('/products', [ProductController::class, 'showProducts']);
 Route::post('/addCart', [ProductController::class, 'addCart']);
 Route::get('/search/{key}', [ProductController::class, 'search']);
+Route::post('/searchPrice', [ProductController::class, 'searchPrice']);
 Route::get('/getType/{type}', [ProductController::class, 'getType']);
 Route::get('/allCart/{user_id}', [ProductController::class, 'allCart']);
 Route::get('/totalCart/{user_id}', [ProductController::class, 'totalCart']);
@@ -38,7 +39,7 @@ Route::get('/getTotalOwnProduct/{id}', [ProductController::class, 'getTotalOwnPr
 Route::post('/sendRequest', [ProductController::class, 'sendRequest']);
 Route::get('/allRequest', [ProductController::class, 'allRequest']);
 Route::get('/deleteUser/{id}', [ProductController::class, 'deleteUser']);
-Route::get('/approveUser/{id}', [ProductController::class, 'approveUser']);
+Route::post('/approveUser', [ProductController::class, 'approveUser']);
 Route::post('/discountProduct', [ProductController::class, 'discountProduct']);
 Route::get('/resetDiscount/{id}', [ProductController::class, 'resetDiscount']);
 

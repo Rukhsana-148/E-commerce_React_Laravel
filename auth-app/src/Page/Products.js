@@ -1,13 +1,16 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { StarRating } from './StarRating';
 import * as motion from "motion/react-client"
 
+import { Navbar, Nav, NavDropdown } from 'react-bootstrap';
 
 export const Products = ({ addToCart }) => {
     const [data, setData] = useState([]);
     const [selectedItem, setSelectedItem] = useState("");
     const [searchData, setSearchData] = useState([]);
+    const [searchDataPrice, setSearchpPrice] = useState([]);
+    const [sortData, setSortData] = useState(data);
     const [role, setRole] = useState(null);
     const [id, setId] = useState(null);
     const [currentPage, setCurrentPage] = useState(1);
@@ -15,8 +18,16 @@ export const Products = ({ addToCart }) => {
     const [averageRating, setAverageRating] = useState(null); // State to store average rating
     const [isNew, setIsNew] = useState(false);
    const [lastLoggedOutTime, setLastLoggedOutTime] = useState();
+  
+   const [order, setOrder] = useState(null);
+   const orderRef = useRef(order)
+   const [sort, setSort] = useState('price');
    const users = JSON.parse(localStorage.getItem("user"));
-
+   useEffect(() => {
+    // Update refs whenever the order or sort state changes
+    orderRef.current = order;
+   
+  }, [order]);
     useEffect(() => {
         if (users?.user) {
             setRole(users?.user?.role);
@@ -128,22 +139,64 @@ export const Products = ({ addToCart }) => {
         }
     };
 
+   const searchPrice = async (key) => {
+        if (!key) return;
+        try {
+            let result = await fetch(`http://localhost:8000/api/searchPrice/${key}`);
+            result = await result.json();
+            setSearchData(result);
+            setCurrentPage(1); // Reset pagination on search
+        } catch (error) {
+            console.error("Error searching products:", error);
+        }
+    };
+
+    
+
+
     // Pagination logic
     const filteredData = selectedItem
         ? data.filter(item => item.type === selectedItem)
         : searchData.length > 0
         ? searchData
+        :sortData.length>0
+        ?sortData
         : data;
 
-    const totalPages = Math.ceil(filteredData.length / itemsPerPage);
+        const sortedData = [...filteredData].sort((a, b) => {
+          if (order === 'Ascending') {
+              return Number(a[sort]) - Number(b[sort]);
+          } else if (order === 'Descending') {
+              return Number(b[sort]) - Number(a[sort]);
+          }
+          return 0; // No sorting applied if order is not set
+      });
+    const totalPages = Math.ceil(sortedData.length / itemsPerPage);
     const indexOfLastItem = currentPage * itemsPerPage;
     const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-    const currentItems = filteredData.slice(indexOfFirstItem, indexOfLastItem);
+    const currentItems = sortedData.slice(indexOfFirstItem, indexOfLastItem);
 
     const nextPage = () => setCurrentPage(prev => (prev < totalPages ? prev + 1 : prev));
     const prevPage = () => setCurrentPage(prev => (prev > 1 ? prev - 1 : prev));
-//rating
+//sorting using price
+/*useEffect(()=>{
+  if(order){
+    const storedItems = [...filteredData];
+    if(order==='Ascending'){
+      storedItems.sort((a, b)=>(Number(a[sort])-Number(b[sort])))
+    }else if(order==='Descending'){
+      storedItems.sort((a, b)=>(Number(b[sort])-Number(a[sort])))
+    }
+    setSortData(storedItems)
+  }
+   
+}, [order, sort, filteredData])*/
+  
 
+
+const changeOrderField = (field)=>{
+  setOrder(field);
+}
     return (
         <div className='mt-[70px]'>
 <div className="md:flex md:flex-wrap md:gap-4">
@@ -217,15 +270,27 @@ export const Products = ({ addToCart }) => {
             
             <p className='text-center font-mono text-green-600 font-bold text-lg py-4'>Our Products</p>
             <div className="md:flex mx-2">
+              <Nav className='text-black font-mono text-sm'>
+                <NavDropdown title="Select Product Type" className='text-black'>
                 {types.map((type, index) => (
-                    <p
-                        key={index}
-                        className={`px-7 py-2  mr-5 rounded-lg ${selectedItem === type ? "bg-green-500 text-white" : "bg-gray-300"}`}
-                        onClick={() => geType(type)}
-                    >
-                        {type}
-                    </p>
+                    <NavDropdown.Item>
+                      <p key={index}
+                    className={`px-7 py-2  mr-5 rounded-lg ${selectedItem === type ? "bg-green-500 text-white" : "bg-gray-300"}`}
+                    onClick={() => geType(type)}>
+                             {type}
+                             </p>
+
+                    </NavDropdown.Item>
+                       
+                   
                 ))}
+                </NavDropdown>
+              </Nav>
+           {
+            selectedItem&&<p onClick={()=>setSelectedItem(!selectedItem)} className='px-5 py-2 mx-2 rounded-lg bg-green-500 text-white'>{selectedItem}</p>
+
+           }
+       
                 <input
                     type='text'
                     placeholder='Search products'
@@ -233,75 +298,93 @@ export const Products = ({ addToCart }) => {
                     onChange={(e) => searchProduct(e.target.value)}
                     className='px-5 mb-3 py-2 border-2 outline-green-800 rounded-lg border-green-400 w-[300px]'
                 />
+
+                <select name='order'
+                onChange={(e)=>changeOrderField(e.target.value)}
+                 className='px-3 py-2 border-2 border-green-500 rounded-lg mx-3 outline-green-500 text-green-600'>
+               <option value="">Select Price Order</option>
+                  <option value="Ascending">Ascending</option>
+                  <option value="Descending">Descending</option>
+                </select>
+                <input
+                    type='number'
+                    placeholder='Search products on price'
+                    name="price"
+                    onChange={(e) => searchPrice(e.target.value)}
+                    className='px-5 mb-3 py-2 border-2 outline-green-800 rounded-lg border-green-400 w-[300px]'
+                />
             </div>
-
+   
             <div className='md:grid md:grid-cols-4 gap-2 mx-2'>
-                {currentItems.length > 0 ? (
-                    currentItems.map((item) => (
-                        <div key={item.id} className="card w-[300px] px-3 py-3 my-2">
-                            <div className="flex justify-between">
-                            {item.isNew && (
-                                <span className="absolute top-2 left-2 bg-green-500 text-white text-xs font-bold px-2 py-1 rounded-lg">
-                                    New
-                                </span>
-                            )}
+              
+              {currentItems.length > 0 ? (
+                  currentItems.map((item) => (
+                      <div key={item.id} className="card w-[300px] px-3 py-3 my-2">
+                          <div className="flex justify-between">
+                          {item.isNew && (
+                              <span className="absolute top-2 left-2 bg-green-500 text-white text-xs font-bold px-2 py-1 rounded-lg">
+                                  New
+                              </span>
+                          )}
+                     
+                      {
+                          (item?.reason!==null)&& (
+                              <span className="absolute top-2 right-0 bg-rose-500 text-white text-sm font-bold px-4 py-2 rounded-lg">
+                              {item?.reason} OFFER- {item?.amount}%
+                          </span>
+                          )
+                      }
+                          </div>
                        
-                        {
-                            (item?.reason!==null)&& (
-                                <span className="absolute top-2 right-0 bg-rose-500 text-white text-sm font-bold px-4 py-2 rounded-lg">
-                                {item?.reason} OFFER- {item?.amount}%
-                            </span>
-                            )
-                        }
-                            </div>
+                      
+                          <motion.img
+                           whileHover={{ scale: 1.2 }}
+                           whileTap={{ scale: 0.95 }}
+                           onHoverStart={() => console.log('hover started!')}
+                           src={"http://127.0.0.1:8000/" + item.image}
+                           alt="product" className='w-[200px] h-[160px] p-2' />
                          
-                        
-                            <motion.img
-                             whileHover={{ scale: 1.2 }}
-                             whileTap={{ scale: 0.95 }}
-                             onHoverStart={() => console.log('hover started!')}
-                             src={"http://127.0.0.1:8000/" + item.image}
-                             alt="product" className='w-[200px] h-[160px] p-2' />
                            
-                             
-                          {averageRating !== null ? (
-                                  <div className="average-rating  pt-2">  <StarRating rating={averageRating} />
-                                  </div>
-                                ) : (
-                                  <div className="average-rating">No ratings available</div>
-                                )}
+                        {averageRating !== null ? (
+                                <div className="average-rating  pt-2">  <StarRating rating={averageRating} />
+                                </div>
+                              ) : (
+                                <div className="average-rating">No ratings available</div>
+                              )}
 
-                            <p className='font-semibold'>{item.name}</p>
-                            <div className="h-[70px]">
-                            {
-                            (item?.reason!==null)?(
-                                <span className="font-semibold text-rose-700 mb-1">
-                                     <p className='font-semibold line-through'>{item.price} TK</p>
-                               Discount Price :  
-                                {
-                                    ((100-item?.amount)*item?.price)/100
-                                } TK
-                            </span>
-                            ):<>   <p className='font-semibold'>{item.price} TK</p></>
-                        }
+                          <p className='font-semibold'>{item.name}</p>
+                          <div className="h-[70px]">
+                          {
+                          (item?.reason!==null)?(
+                              <span className="font-semibold text-rose-700 mb-1">
+                                   <p className='font-semibold line-through'>{item.price} TK</p>
+                             Discount Price :  
+                              {
+                                  ((100-item?.amount)*item?.price)/100
+                              } TK
+                          </span>
+                          ):<>   <p className='font-semibold'>{item.price} TK</p></>
+                      }
 
-                        </div>
+                      </div>
 
-                           {
-                                users ? (
-                                    <p onClick={() => addToCart(item)} className='px-5 py-2 rounded-md bg-blue-500 text-white'>
-                                        Add To Cart
-                                    </p>
-                                ) : null
-                            }
-                            <Link to={`/detail/${item.id}`} className='no-underline'>
-                                <p className='no-underline rounded-md py-1 bg-black text-white'>Detail</p>
-                            </Link>
-                        </div>
-                    ))
-                ) : (
-                    <p>No products found.</p>
-                )}
+                         {
+                              users ? (
+                                  <p onClick={() => addToCart(item)} className='px-5 py-2 rounded-md bg-blue-500 text-white'>
+                                      Add To Cart
+                                  </p>
+                              ) : null
+                          }
+                          <Link to={`/detail/${item.id}`} className='no-underline'>
+                              <p className='no-underline rounded-md py-1 bg-black text-white'>Detail</p>
+                          </Link>
+                      </div>
+                  ))
+              ) : (
+                  <p>No products found.</p>
+              )}
+          
+                
             </div>
 
             {/* Pagination Controls */}

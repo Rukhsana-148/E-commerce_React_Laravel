@@ -27,6 +27,7 @@ class ProductController extends Controller
         }
           $product->price = $req->input('price');
         $product->quantity = $req->input('qunt');
+        $product->mainType = $req->input('mainType');
         $product->type = $req->input('type');
         $product->owner = $req->input('owner');
         $product->save();
@@ -60,6 +61,12 @@ class ProductController extends Controller
     public function search($key){
         return Product::where('name', 'like', "%$key%")->get();
      }
+     public function searchPrice(Request $request){
+      $max = $request->input('max');
+      $max = $request->input('min');
+      return Product::whereBetween('price', [$min, $max])->get();
+   }
+
      public function getType($type){
       return Product::where('type', $type)->get();
      }
@@ -280,8 +287,8 @@ if ($validator->fails()) {
      }
      $timeDiff = $lastRequest->diffInMinutes($current); // No need for 'false' here
 
-   $time = 5-$timeDiff;
-   if($timeDiff<5){
+   $time = 1-$timeDiff;
+   if($timeDiff<1){
      return response()->json(['message'=>"You can send request after ${time}"]);
    }else{
  // Create a new request record
@@ -319,15 +326,21 @@ public function deleteUser($id){
   }
 }
 
-public function approveUser($id) {
+public function approveUser(Request $request) {
   // Fetch a single user by ID
+  $validator = Validator::make($request->all(), [
+    'id' => 'required', // Ensure the ID exists in users table and is unique in admin_requests table
+    'sellerType'=> 'required'
+]);
+  $id = $request->input('id');
   $user = User::find($id);
 
   if ($user) {
       // Update the user's role
       $user->role = 'admin';
+      $user->sellerType = $request->input('sellerType');
       $user->save(); // Save the updated user
- $product = AdminRequest::where('user_id', $id)->delete();
+      $product = AdminRequest::where('user_id', $id)->delete();
       // Return success message
       return 'Seller Request has been approved';
   } else {

@@ -1,0 +1,54 @@
+[
+    {
+        "category":"Shoe",
+        "subCategory":[
+            {
+                "name":"Baby Shoe"
+            }, {
+                 "name":"Shoe"
+            },
+            {
+                 "name":"High Hill"
+            }, {
+                "name" : "Flat Hill"
+            }
+        ]
+    },
+    {
+        "category":"Dress",
+        "subCategory":[
+            {
+                "name":"Baby Dress"
+            }, {
+                 "name":"Shari"
+            },
+            {
+                 "name":"Hijab"
+            }, {
+                "name":"Borka"
+           }
+
+        ]
+    },{
+
+        "category":"Electronics",
+        "subCategory":[
+            {
+                "name":"Laptop"
+            }, {
+                 "name":"Phone"
+            },
+            {
+                 "name":"TV"
+            }, {
+                "name":"Iron"
+           }, {
+            "name" : "Room Heater"
+           }, {
+            "name" : "Rechargeable Fan"
+           }
+
+        ]
+    }
+    
+]

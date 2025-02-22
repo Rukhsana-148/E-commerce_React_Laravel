@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { useParams } from 'react-router-dom';
 import Swal from 'sweetalert2';
-
+import allCategory from './Category.json'
 export const EditProfile = ({profile, setProfile, setNotify}) => {
     const [user, setUser] = useState();
     const fileInputRef = useRef(null);
@@ -154,13 +154,14 @@ export const EditProfile = ({profile, setProfile, setNotify}) => {
     <p className='text-sm font-mono '>Please select product category that you ant to sell.</p>
     <select className="border-2 border-black radius-lg px-5 py-3 rounded-lg"
           name='cat' onChange={(e)=>setCat(e.target.value)}>
-              <option value="All" className='ml-2 px-4 py-1 rounded-lg'>All</option>
-                              
-                                <option value="Shoe" className='ml-2 px-4 py-1 rounded-lg'> Shoe</option>
-                                <option value="Dress" className='ml-2 px-4 py-1 rounded-lg'>Dress</option>
-                                <option value="Electrical Equipments" className='ml-2 px-4 py-1 rounded-lg'>Electrical Equipments</option>
-                                <option value="Cosmetics" className='ml-2 px-4 py-1 rounded-lg'>Cosmetics</option>
-                               
+              <option  className='ml-2 px-4 py-1 rounded-lg'>Select products that you want to sell</option>
+                              {
+                                allCategory.map((item)=>{
+                                  return <>   <option value={item.category} className='ml-2 px-4 py-1 rounded-lg'> {item.category}</option>
+                              </>
+                                })
+                              }
+                             
                                   </select> <br/>
     <input type='submit'value="Send Request for Seller" className='px-5 py-2 my-2 rounded-lg border-2 bg-black text-white'/>
     </form></>:<></>

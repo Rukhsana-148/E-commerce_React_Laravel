@@ -15,7 +15,7 @@ class Product extends Model
     protected $table = 'products';
 
     // The attributes that are mass assignable
-    protected $fillable = ['name', 'description','image', 'price', 'quantity', 'type', 'user_name', 'rating', 'comment', 'reason', 'amount'];
+    protected $fillable = ['name', 'description','image', 'price', 'quantity', 'mainType', 'type', 'user_name', 'rating', 'comment', 'reason', 'amount'];
  
     // If using soft deletes
     protected $dates = ['deleted_at'];
