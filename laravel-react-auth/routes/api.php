@@ -15,6 +15,8 @@ Route::get('/editProfile/{id}', [RegisterController::class, 'editProfile']);
 Route::post('/myProfile/{id}', [RegisterController::class, 'myProfile']);
 Route::post('/addProduct', [ProductController::class, 'addProduct']);
 Route::get('/products', [ProductController::class, 'showProducts']);
+Route::get('/', [ProductController::class, 'showProductsHome']);
+
 Route::post('/addCart', [ProductController::class, 'addCart']);
 Route::get('/search/{key}', [ProductController::class, 'search']);
 Route::post('/searchPrice', [ProductController::class, 'searchPrice']);
@@ -44,6 +46,9 @@ Route::post('/discountProduct', [ProductController::class, 'discountProduct']);
 Route::get('/resetDiscount/{id}', [ProductController::class, 'resetDiscount']);
 
 Route::get('/getSalesWithTime/{id}', [ProductController::class, 'getSalesWithTime']);
+Route::get('/isInCarts/{id}/{userId}', [ProductController::class, 'isInCarts']);
+
+
 Route::middleware([CorsMiddleware::class])->group(function () {
     Route::post('/auth/forgetPassword', [RegisterController::class, 'forgetPassword']);
    

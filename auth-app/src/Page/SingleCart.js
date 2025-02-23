@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import Swal from 'sweetalert2';
+import { useNavigate } from 'react-router-dom';
 
 export const SingleCart = ({cartCount}) => {
   const [cart, setCart] = useState(null);
@@ -12,8 +13,9 @@ export const SingleCart = ({cartCount}) => {
   const [price, setPrice] = useState(0);
   const [remain, setRemain] = useState(0);
   const [user_id, setUserId]= useState(null);
-
+  const navigate = useNavigate();
   const { id } = useParams();
+   
   const users = JSON.parse(localStorage.getItem('user'));
   
 useEffect(()=>{
@@ -146,6 +148,9 @@ setItems(prevProducts => {
                      draggable: true,
                      text: "Order is Successfully Placed!",
                    });
+                   setCart(null)
+                   navigate(`/myProducts/${user_id}`)
+
     } catch (error) {
       console.error('Error placing order:', error);
       Swal.fire({
@@ -158,8 +163,9 @@ setItems(prevProducts => {
 
   return (
     <div className="md:flex   justify-center items-center px-4 rounded-lg py-4 w-[500px] mt-[90px] md:border-2 md:border-green-800 mx-auto">
-    <div className=" justify-center items-center mx-4 my-3">
-
+    {
+    cart!==null?<><div className=" justify-center items-center mx-4 my-3">
+ 
     {
                             (cart?.products?.reason!==null)&& (
                                 <span className="flex px-3 py-1 rounded-lg bg-rose-500 text-white">
@@ -200,7 +206,9 @@ setItems(prevProducts => {
       ) : (
         <p className="text-center text-red-500 text-lg">No Products</p>
       )}
-    </div>
+    </div></>:<p className='text-green-500 '>This product is not in your cart list.</p>
+  }
+    
   </div>
   
   );

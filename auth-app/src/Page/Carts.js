@@ -85,7 +85,7 @@ export const Carts = ({cartCount}) => {
                                         <td className="border border-green-300 px-4 py-2">{item?.products?.price}</td>
                                         <td className="border border-green-300 px-4 py-2 text-center">
                                             <Link to={`cart/${item.id}`}>
-                                                <button className="bg-blue-500 text-white px-3 mb-2 py-1 rounded">Order</button>
+                                                <button className="bg-blue-500 text-white px-3 mb-2 py-1 rounded ">Order</button>
                                             </Link>
                                             <button onClick={() => deleteCart(item.id)} className="bg-red-500 text-white px-3 py-1 rounded ml-2">Remove</button>
                                         </td>

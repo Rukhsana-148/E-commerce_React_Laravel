@@ -24,6 +24,7 @@ import { Seller } from './Page/Seller';
 import { Discount } from './Page/Discount';
 import { NotFound } from './Page/NotFound';
 import  allRoutes from './Page/PredefinedRoutes.json'
+import { NewPage } from './Page/NewPage';
 
 export const AuthContext = createContext();
 
@@ -369,21 +370,21 @@ console.log(data)
                           </span>
                         }
                       >
-                        <NavDropdown.Item>
+                        <NavDropdown.Item style={{backgroundColor:'transparent'}}>
                           <Link
                             className="no-underline text-black hover:bg-gray-400 px-2 py-1 hover:rounded-sm"
                             to={`editProfile/${profile?.id || profile?.user?.id}`}
                           >
                             Edit Profile
                           </Link>
-                        </NavDropdown.Item>
-                        <NavDropdown.Item>
+                        </NavDropdown.Item >
+                        <NavDropdown.Item style={{backgroundColor:'transparent'}}>
                           <p className="capitalize hover:bg-gray-400 px-2 py-1 transition duration-300 delay-200 hover:rounded-sm">{profile?.role || profile?.user?.role}</p>
                         </NavDropdown.Item>
-                        <NavDropdown.Item>
+                        <NavDropdown.Item style={{backgroundColor:'transparent'}}>
                           <p className="hover:bg-gray-400 px-2 py-1 hover:rounded-sm">{profile?.name || profile?.user?.name}</p>
                         </NavDropdown.Item>
-                        <NavDropdown.Item onClick={logOut} ><p className=' px-2 py-1 text-xl text-green-600'>
+                        <NavDropdown.Item style={{backgroundColor:'transparent'}} onClick={logOut} ><p className=' px-2 py-1 text-xl text-green-600'>
                           <FaSignOutAlt></FaSignOutAlt>
                           </p></NavDropdown.Item>
                       </NavDropdown>
@@ -492,7 +493,8 @@ console.log(data)
             <Route path="/allCart" element={<Carts cartCount={setCount}/>} />
             <Route path="/allCart/cart/:id" element={<SingleCart cartCount={setCount}/>} />
             <Route path="/myProducts/:id" element={<MyProducts />} />
-            <Route path="/detail/:id" element={<SingleProduct addToCart={countHandle} />} />
+            <Route path="/detail/:productId" element={<SingleProduct addToCart={countHandle} />} />
+          
             <Route path="/updateProduct/:id" element={<UpdateProduct />} />
           
             <Route path="/discount/:id" element={<Discount />} />

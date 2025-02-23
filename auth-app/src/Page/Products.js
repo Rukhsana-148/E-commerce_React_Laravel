@@ -12,9 +12,11 @@ export const Products = ({ addToCart }) => {
     const [searchDataPrice, setSearchpPrice] = useState([]);
     const [sortData, setSortData] = useState(data);
     const [role, setRole] = useState(null);
+     const [found, setFound] = useState(null);
     const [id, setId] = useState(null);
     const [min, setMin] = useState(0);
     const [max, setMax] = useState(0);
+
     const [currentPage, setCurrentPage] = useState(1);
     const itemsPerPage = 4; // Number of items per page
     const [averageRating, setAverageRating] = useState(null); // State to store average rating
@@ -65,7 +67,7 @@ export const Products = ({ addToCart }) => {
               setLastLoggedOutTime(lastLogTime); // Optional if you're using this elsewhere
       
               // Map through each product and calculate isNew and averageRating
-              result = result.map(product => {
+              result = await Promise.all(result.map(async (product) => {
                 const createdTime = new Date(product.created_at);
                 const isNew = createdTime > lastLogTime; // Directly calculate isNew
                  
@@ -73,27 +75,22 @@ export const Products = ({ addToCart }) => {
                 console.log("Product created time:", createdTime);
                 console.log("Last Logout time:", lastLogTime, "User:", users?.user?.id || users?.id);
       
-                // Calculate average rating
-                let avgRating = 0;
-                if (product.rating && typeof product.rating === 'string') {
-                  try {
-                    const ratingsArray = JSON.parse(product.rating || "[]");
-                    const numericRatings = ratingsArray.map(rating => parseInt(rating));
-                    const total = numericRatings.reduce((sum, rating) => sum + rating, 0);
-                    avgRating = numericRatings.length > 0 ? total / numericRatings.length : 0;
-                   
-                  } catch (error) {
-                    console.error("Error parsing ratings for product:", error);
-                  }
-                }
+                 let resultcart = await fetch(`http://127.0.0.1:8000/api/isInCarts/${product?.id}/${users?.user?.id || users?.id}`)
+                 resultcart = await resultcart.json();
+                 
       
                 return {
                   ...product,
                   isNew, // Attach the isNew property
-                  averageRating: setAverageRating(avgRating.toFixed(1)),
+                  found:resultcart?.exist,
+                  cartId:resultcart?.cartId,
                 };
-              });
+              }));
       
+
+
+
+
               // Filter new products
               const newProducts = result.filter(product => product.isNew);
 
@@ -291,10 +288,12 @@ const changeOrderField = (field)=>{
             
             <p className='text-center font-mono text-green-600 font-bold text-lg py-4'>Our Products</p>
             <div className="md:flex mx-2">
-              <Nav className='text-black font-mono text-sm'>
-                <NavDropdown title="Select Product Type" className='text-black'>
+              <Nav className='text-black font-mono text-sm' style={{color:'green'}}>
+                <NavDropdown 
+                title={<span className='text-green-500'>Select Product Type</span>}
+                 className='text-black'>
                 {types.map((type, index) => (
-                    <NavDropdown.Item>
+                    <NavDropdown.Item className='hover:background-none' style={{backgroundColor:'transparent', color:'black'}}>
                       <p key={index}
                     className={`px-7 py-2  mr-5 rounded-lg ${selectedItem === type ? "bg-green-500 text-white" : "bg-gray-300"}`}
                     onClick={() => geType(type)}>
@@ -308,7 +307,7 @@ const changeOrderField = (field)=>{
                 </NavDropdown>
               </Nav>
            {
-            selectedItem&&<p onClick={()=>setSelectedItem(!selectedItem)} className='px-5 text-sm h-[50px] mx-2 rounded-lg bg-green-500 text-white'>{selectedItem}</p>
+            selectedItem&&<p onClick={()=>setSelectedItem(!selectedItem)} className='py-1 h-[36px] px-3 text-lg mx-2 rounded-lg bg-green-500 text-white'>{selectedItem}</p>
 
            }
        
@@ -382,12 +381,7 @@ const changeOrderField = (field)=>{
                            alt="product" className='w-[200px] h-[160px] p-2' />
                          
                            
-                        {averageRating !== null ? (
-                                <div className="average-rating  pt-2">  <StarRating rating={averageRating} />
-                                </div>
-                              ) : (
-                                <div className="average-rating">No ratings available</div>
-                              )}
+                      
 
                           <p className='font-semibold'>{item.name}</p>
                           <div className="h-[70px]">
@@ -404,14 +398,21 @@ const changeOrderField = (field)=>{
                       }
 
                       </div>
-
-                         {
+                        {
+                          item?.found?<><Link className='no-underline' to={`/allCart/cart/${item?.cartId}`}>
+                                                       <p className='px-5 py-2 mb-3 rounded-md bg-pink-500 text-white' >
+                                                       My Cart Item
+                                                       </p>
+                                                       
+                                                         </Link></>:<>{
                               users ? (
                                   <p onClick={() => addToCart(item)} className='px-5 py-2 rounded-md bg-blue-500 text-white'>
                                       Add To Cart
                                   </p>
                               ) : null
-                          }
+                          }</>
+                        }
+                         
                           <Link to={`/detail/${item.id}`} className='no-underline'>
                               <p className='no-underline rounded-md py-1 bg-black text-white'>Detail</p>
                           </Link>

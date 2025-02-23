@@ -35,6 +35,13 @@ class ProductController extends Controller
       }
   public function showProducts(){
     return Product::orderBy('id', 'desc')->get();
+
+  }
+
+  
+  public function showProductsHome(){
+    return Product::orderBy('id', 'desc')->get();
+
   }
     public function addCart(Request $req){
       $req->validate([
@@ -367,6 +374,14 @@ public function resetDiscount($id){
  $product->reason = null;
  $product->save();
  return 'Discount is Reset';
+}
+
+public function isInCarts($id, $userId){
+  $exist  = Cart::where('product_id', $id)->where('user_id', $userId)->exists();
+  $cartId =Cart::where('product_id', $id)->where('user_id', $userId)->value('id');
+   return response()->json(['exist'=>$exist,
+                            'cartId'=> $cartId
+                           ]);
 }
 
 }

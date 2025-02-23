@@ -3,35 +3,39 @@ import { useParams } from 'react-router-dom'
 import { StarRating } from './StarRating';
 import { FaUser } from 'react-icons/fa'
 import * as motion from "motion/react-client";
-
+import { Link } from 'react-router-dom';
 export const SingleProduct = ({addToCart}) => {
 
     const [item, setItems]= useState(null);
     const [cmntData, setCmntData] = useState();
-    const {id} = useParams();
+    const {productId} = useParams();
     const [role, setRole] = useState(null);
-
+    const [user_id, setUserId] = useState(null);
+    const [found, setFound] = useState(null);
     const [averageRating, setAverageRating] = useState(null); 
+    const [cartId, setCartID] = useState(null);
      const users = JSON.parse(localStorage.getItem("user"));
      
      useEffect(()=>{
       if(users?.user){
         setRole(users?.user?.role)
+        setUserId(users?.user?.id)
       }else{
         setRole(users?.role)
+        setUserId(users?.id)
       }
      }, [users])
 
    useEffect(()=>{
-    console.log("Id",id)
+    console.log("Id",productId)
    const fetchdata = async()=>{
-       let result = await fetch(`http://localhost:8000/api/getProduct/${id}`)
+       let result = await fetch(`http://localhost:8000/api/getProduct/${productId}`)
         result =  await result.json()
         setItems(result)
         setCmntData(result.comment||"")
    }
    fetchdata();
-   },[id])
+   },[productId])
    let comments = [];
    if(cmntData){
      try{
@@ -40,6 +44,15 @@ export const SingleProduct = ({addToCart}) => {
    comments = [{comment: cmntData}];
      }
    }
+ useEffect(()=>{
+  const fetchData = async ()=>{
+    let result = await fetch(`http://127.0.0.1:8000/api/isInCarts/${productId}/${user_id}`)
+    result = await result.json();
+    setFound(result.exist)
+    setCartID(result.cartId);
+  }
+  fetchData();
+ }, [productId, user_id])
 
 useEffect(() => {
    
@@ -63,7 +76,7 @@ useEffect(() => {
     }
   }, [item?.rating]); // Dependency array ensures this runs when item.rating changes
   return (
-    <div className={` ${role==='admin'?"mt-[70px] ":"mt-[100px] "} md:flex justify-center items-center`}>
+    <div className={` ${role==='admin'?"mt-[70px] ":"mt-[100px] "} md:flex mb-[20px] justify-center items-center`}>
      
 
  <div key={item?.id} className={`px-2 mt-[50px] py-1 rounded-md border-2 border-green-500`}>
@@ -96,7 +109,8 @@ useEffect(() => {
         <div className="average-rating">No ratings available</div>
       )}
               
-                                <p className='font-bold text-xl py-1'>{item?.name}</p>
+                                <p className='font-bold text-xl py-1'>{item?.name} {found}</p>
+                              
                                 <p className='w-[300px]'>{item?.description}</p>
                                 {
                             (item?.reason!==null)?(
@@ -107,10 +121,24 @@ useEffect(() => {
                                 }</span>
                                 TK</p>
                             </span>
-                            ):<>   <p className='font-semibold'>{item.price} TK</p></>
+                            ):<>   <p className='font-semibold'>{item.price} TK </p></>
                         }
-      {users?<> <p onClick={()=>addToCart(item)} className='lg:px-5 text-sm py-2 px-2 rounded-md bg-green-900 text-white'>Add To Cart</p>
-                          </>:<></>}
+                        {
+                          found?
+                            <Link  to={`/allCart/cart/${cartId}`}>
+                             <button className='lg:px-5 text-sm py-2 px-2 rounded-md bg-green-900 text-white' >
+                             My Cart Item
+                             </button>
+                             
+                               </Link>
+                           
+                            :
+                          <>
+                           {role==='user'?<>  <p onClick={()=>addToCart(item)} className='lg:px-5 text-sm py-2 px-2 rounded-md bg-green-900 text-white'>Add To Cart</p>
+                           </>:<></>}
+                          </>
+                        }
+     
                                
                                 {/* Optionally, you can show the user's details */}
                                
