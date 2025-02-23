@@ -63,7 +63,7 @@ class ProductController extends Controller
      }
      public function searchPrice(Request $request){
       $max = $request->input('max');
-      $max = $request->input('min');
+      $min  = $request->input('min');
       return Product::whereBetween('price', [$min, $max])->get();
    }
 

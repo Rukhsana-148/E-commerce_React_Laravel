@@ -13,6 +13,8 @@ export const Products = ({ addToCart }) => {
     const [sortData, setSortData] = useState(data);
     const [role, setRole] = useState(null);
     const [id, setId] = useState(null);
+    const [min, setMin] = useState(0);
+    const [max, setMax] = useState(0);
     const [currentPage, setCurrentPage] = useState(1);
     const itemsPerPage = 4; // Number of items per page
     const [averageRating, setAverageRating] = useState(null); // State to store average rating
@@ -138,18 +140,35 @@ export const Products = ({ addToCart }) => {
             console.error("Error searching products:", error);
         }
     };
+  
+   const handlePrice = async (e) => {
+    e.preventDefault();
+    const formData = new FormData(e.target);
+ 
+    try {
+      const response = await fetch(`http://127.0.0.1:8000/api/searchPrice`, {
+          method: 'POST',
+          body: formData,
+          headers: {
+              "Accept": "application/json"
+          }
+      });
 
-   const searchPrice = async (key) => {
-        if (!key) return;
-        try {
-            let result = await fetch(`http://localhost:8000/api/searchPrice/${key}`);
-            result = await result.json();
-            setSearchData(result);
-            setCurrentPage(1); // Reset pagination on search
-        } catch (error) {
-            console.error("Error searching products:", error);
-        }
+      if (!response.ok) {
+          throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+
+      const result = await response.json();
+      setSearchpPrice(result);
+  } catch (error) {
+      console.error("Error fetching price:", error);
+  }
+        
     };
+  
+  
+      
+console.log(searchDataPrice)
 
     
 
@@ -161,6 +180,8 @@ export const Products = ({ addToCart }) => {
         ? searchData
         :sortData.length>0
         ?sortData
+        :searchDataPrice.length>0
+        ?searchDataPrice
         : data;
 
         const sortedData = [...filteredData].sort((a, b) => {
@@ -287,7 +308,7 @@ const changeOrderField = (field)=>{
                 </NavDropdown>
               </Nav>
            {
-            selectedItem&&<p onClick={()=>setSelectedItem(!selectedItem)} className='px-5 py-2 mx-2 rounded-lg bg-green-500 text-white'>{selectedItem}</p>
+            selectedItem&&<p onClick={()=>setSelectedItem(!selectedItem)} className='px-5 text-sm h-[50px] mx-2 rounded-lg bg-green-500 text-white'>{selectedItem}</p>
 
            }
        
@@ -301,18 +322,34 @@ const changeOrderField = (field)=>{
 
                 <select name='order'
                 onChange={(e)=>changeOrderField(e.target.value)}
-                 className='px-3 py-2 border-2 border-green-500 rounded-lg mx-3 outline-green-500 text-green-600'>
+                 className='px-3 py-2 border-2 text-sm h-[50px] border-green-500 rounded-lg mx-3 outline-green-500 text-green-600'>
                <option value="">Select Price Order</option>
                   <option value="Ascending">Ascending</option>
                   <option value="Descending">Descending</option>
                 </select>
+                <form className='lg:flex my-2' onSubmit={handlePrice}>
                 <input
+                required
                     type='number'
-                    placeholder='Search products on price'
-                    name="price"
-                    onChange={(e) => searchPrice(e.target.value)}
-                    className='px-5 mb-3 py-2 border-2 outline-green-800 rounded-lg border-green-400 w-[300px]'
+                    placeholder='Min Price'
+                    name="min"
+                    min={1}
+                    onChange={(e) => setMin(e.target.value)}
+                    className='px-1 mr-1 mb-3 w-[90px] text-sm py-2 border-2  text-black outline-green-800 rounded-lg border-green-400'
                 />
+                <input
+                required
+
+                    type='number'
+                    placeholder='Max price'
+                    name="max"
+                    min={min}
+                    onChange={(e) => setMax(e.target.value)}
+                    className='px-1 mb-3 w-[90px] text-sm  py-2 border-2 text-black outline-green-800 rounded-lg border-green-400'
+                />
+                <input type='submit' name='submit' value='search' className='h-[40px] w-[100px] ml-2  text-xs rounded-md border-2 border-green-500'/>
+                </form>
+             
             </div>
    
             <div className='md:grid md:grid-cols-4 gap-2 mx-2'>
